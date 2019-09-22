@@ -2,12 +2,13 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 21:27:25
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 21:35:22
+# @Last Modified time: 2019-09-22 23:56:06
 
 from enum import Enum, unique;
 
 @unique
 class ChessConst(Enum):
+	Empty		= 0x00; # 空
 	# 黑色棋子
 	B_Soldier	= 0x01; # 卒
 	B_Cannon 	= 0x02; # 砲

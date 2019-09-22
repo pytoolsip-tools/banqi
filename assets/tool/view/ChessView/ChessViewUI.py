@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:49:39
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 23:03:45
+# @Last Modified time: 2019-09-22 23:54:12
 
 import wx;
 
@@ -63,10 +63,13 @@ class ChessViewUI(wx.Panel):
 	def bitmap(self):
 		return self.__bitmap;
 
-	def val(self):
-		return self.__val;
-
 	def getParams(self, key = None):
 		if not key:
 			return self.__params;
 		return self.__params.get(key, None);
+
+	def hideBitmap(self):
+		return self.__bitmap.Hide();
+
+	def showBitmap(self):
+		return self.__bitmap.Show();

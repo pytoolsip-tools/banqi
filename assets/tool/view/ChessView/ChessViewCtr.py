@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:49:39
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 21:37:55
+# @Last Modified time: 2019-09-22 23:54:38
 import os;
 import wx;
 
@@ -99,19 +99,19 @@ class ChessViewCtr(object):
 		# 绑定单击事件
 		def onClick(event):
 			if callable(self.__clickEvent):
-				self.__clickEvent(self, event);
+				self.__clickEvent(self.getUI(), event);
 		self.__ui.Bind(wx.EVT_LEFT_DOWN, onClick);
 		self.__ui.bitmap().Bind(wx.EVT_LEFT_DOWN, onClick);
 		# 绑定双击事件
 		def onDClick(event):
 			if callable(self.__dClickEvent):
-				self.__dClickEvent(self, event);
+				self.__dClickEvent(self.getUI(), event);
 		self.__ui.Bind(wx.EVT_LEFT_DCLICK, onDClick);
 		self.__ui.bitmap().Bind(wx.EVT_LEFT_DCLICK, onDClick);
 		# 绑定双击事件
 		def onRClick(event):
 			if callable(self.__rClickEvent):
-				self.__rClickEvent(self, event);
+				self.__rClickEvent(self.getUI(), event);
 		self.__ui.Bind(wx.EVT_RIGHT_DOWN, onRClick);
 		self.__ui.bitmap().Bind(wx.EVT_RIGHT_DOWN, onRClick);
 
@@ -120,15 +120,6 @@ class ChessViewCtr(object):
 
 	def getBitmap(self):
 		return self.__ui.getBitmap();
-
-	def getVal(self):
-		return self.__ui.val();
-
-	def getColor(self):
-		return self.__ui.val() >> 4;
-
-	def getPoint(self):
-		return self.__ui.val() & 0x01;
 
 	def setClickEvent(self, event):
 		self.__clickEvent = event;

@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 23:35:27
+# @Last Modified time: 2019-09-23 00:10:34
 
 import wx;
 import copy;
@@ -33,8 +33,8 @@ class BanQiViewUI(wx.Panel):
 			"style" : wx.BORDER_THEME,
 			"matrix" : (4,8),
 			"bgColour" : wx.Colour(238,168,37),
-			"focusColour" : wx.Colour(240,200,37),
-			"emptyColour" : wx.Colour(255,255,255),
+			"emptyColour" : wx.Colour(0,0,0),
+			"focusColour" : wx.Colour(200,150,37),
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -64,10 +64,12 @@ class BanQiViewUI(wx.Panel):
 		pass;
 
 	def createEmptyBitmap(self):
+		ChessConst = require(self._curPath + "../../config", "chess_config", "ChessConst");
+		ChessBitmap = require(self._curPath + "../../ui", "bitmap", "ChessBitmap");
 		size = wx.Size(-1, -1);
 		if len(self.__chessList) > 0:
 			size = self.__chessList[0].GetSize();
-		self.__emptyBitmap = wx.Bitmap(size);
+		self.__emptyBitmap = ChessBitmap(ChessConst.Empty, size);
 
 	def createChessViews(self):
 		ChessCountConfig = require(self._curPath + "../../config", "chess_config", "ChessCountConfig");
@@ -81,9 +83,40 @@ class BanQiViewUI(wx.Panel):
 				chessCtr = CreateCtr(self._curPath + "../ChessView", self, params = {"bitmap" : bitmap});
 				chessCtr.getUI().SetBackgroundColour(self.__params["bgColour"]);
 				self.__chessList.append(chessCtr.getUI());
+				# 绑定点击事件
+				chessCtr.setClickEvent(self.onClickItem);
+				chessCtr.setDClickEvent(self.onDClickItem);
+				chessCtr.setRClickEvent(self.onRClickItem);
 
 	def randomChess(self):
 		bitmapList = copy.copy(self.__bitmapList);
 		random.shuffle(bitmapList);
 		for i,chessView in enumerate(self.__chessList):
-				chessView.setBitmap(bitmapList[i]);
+			chessView.setBitmap(bitmapList[i]);
+			chessView.hideBitmap();
+
+	def onClickItem(self, item, event):
+		if item == self.__curItem:
+			return;
+		if self.__curItem:
+			self.__curItem.SetBackgroundColour(self.__params["bgColour"]);
+			self.__curItem.Refresh();
+		item.SetBackgroundColour(self.__params["focusColour"]);
+		item.Refresh();
+		self.__curItem = item;
+		pass;
+
+	def onDClickItem(self, item, event):
+		if item != self.__curItem:
+			self.onClickItem(item, event);
+		item.showBitmap();
+		pass;
+
+	def onRClickItem(self, item, event):
+		if item != self.__curItem:
+			self.onClickItem(item, event);
+		item.setBitmap(self.__emptyBitmap);
+		item.hideBitmap();
+		item.SetBackgroundColour(self.__params["emptyColour"]);
+		item.Refresh();
+		pass;

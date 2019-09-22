@@ -2,7 +2,7 @@
 # @Author: JimDreamHeart
 # @Date:   2019-09-22 13:52:59
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 23:34:18
+# @Last Modified time: 2019-09-22 23:55:07
 
 import wx;
 
@@ -24,4 +24,10 @@ class ChessBitmap(wx.Bitmap):
 			self.LoadFile(GetPathByRelativePath("../"+ChessResConfig[self.__val], self._curPath), wx.BITMAP_TYPE_ANY);
 
 	def getVal(self):
-		return self.__val;
+		return self.__val.value;
+
+	def getColor(self):
+		return self.__val.value >> 4;
+
+	def getPoint(self):
+		return self.__val.value & 0x01;
