@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2018-10-08 21:02:23
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-03-16 13:46:37
+# @Last Modified time: 2019-09-22 09:36:52
 
 import wx;
 
@@ -58,13 +58,22 @@ class MainViewUI(wx.ScrolledWindow):
 		self.resetScrollbars(); # 重置滚动条
 
 	def createControls(self):
-		# self.getCtr().createCtrByKey("key", self._curPath + "***View"); # , parent = self, params = {}
-		self.createTestCtrl();
+		self.getCtr().createCtrByKey("ControllerView", self._curPath + "../view/ControllerView", params = {
+			"size" : (150, -1),
+		}); # , parent = self, params = {}
+		self.getCtr().createCtrByKey("BanQiView", self._curPath + "../view/BanQiView", params = {
+			"size" : (-1, -1),
+		}); # , parent = self, params = {}
+		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
+			"size" : (200, -1)
+		}); # , parent = self, params = {}
 		pass;
 		
 	def initViewLayout(self):
 		box = wx.BoxSizer(wx.HORIZONTAL);
-		box.Add(self.testCtrl);
+		box.Add(self.getCtr().getUIByKey("ControllerView"));
+		box.Add(self.getCtr().getUIByKey("BanQiView"));
+		box.Add(self.getCtr().getUIByKey("TipsView"));
 		self.SetSizerAndFit(box);
 
 	def resetScrollbars(self):
@@ -77,6 +86,3 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def updateView(self, data):
 		pass;
-
-	def createTestCtrl(self):
-		self.testCtrl = wx.TextCtrl(self, value = "测试文本控件", size = self.GetSize(), style = wx.TE_MULTILINE);
