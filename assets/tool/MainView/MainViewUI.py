@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2018-10-08 21:02:23
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 09:36:52
+# @Last Modified time: 2019-09-22 23:08:29
 
 import wx;
 
@@ -59,20 +59,20 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def createControls(self):
 		self.getCtr().createCtrByKey("ControllerView", self._curPath + "../view/ControllerView", params = {
-			"size" : (150, -1),
+			"size" : (150, max(600, self.GetSize().y)),
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("BanQiView", self._curPath + "../view/BanQiView", params = {
-			"size" : (-1, -1),
+			"size" : (600, max(600, self.GetSize().y)),
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
-			"size" : (200, -1)
+			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
 		}); # , parent = self, params = {}
 		pass;
 		
 	def initViewLayout(self):
 		box = wx.BoxSizer(wx.HORIZONTAL);
 		box.Add(self.getCtr().getUIByKey("ControllerView"));
-		box.Add(self.getCtr().getUIByKey("BanQiView"));
+		box.Add(self.getCtr().getUIByKey("BanQiView"), flag = wx.ALIGN_CENTER|wx.LEFT|wx.RIGHT, border = 20);
 		box.Add(self.getCtr().getUIByKey("TipsView"));
 		self.SetSizerAndFit(box);
 
