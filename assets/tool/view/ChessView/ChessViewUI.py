@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:49:39
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 23:54:12
+# @Last Modified time: 2019-09-23 17:12:30
 
 import wx;
 
@@ -18,6 +18,7 @@ class ChessViewUI(wx.Panel):
 		self._curPath = curPath;
 		self.__viewCtr = viewCtr;
 		self.__bitmap = None;
+		self.__chessBitmap = None;
 
 	def initParams(self, params):
 		# 初始化参数
@@ -52,13 +53,15 @@ class ChessViewUI(wx.Panel):
 		pass;
 
 	def createBitmap(self):
+		self.__chessBitmap = self.__params["bitmap"];
 		self.__bitmap = wx.StaticBitmap(self, bitmap = self.__params["bitmap"]);
 
-	def setBitmap(self, bitmap):
+	def setChessBitmap(self, bitmap):
 		self.__bitmap.SetBitmap(bitmap);
+		self.__chessBitmap = bitmap;
 
-	def getBitmap(self):
-		return self.__bitmap.GetBitmap();
+	def getChessBitmap(self):
+		return self.__chessBitmap;
 
 	def bitmap(self):
 		return self.__bitmap;
@@ -73,3 +76,6 @@ class ChessViewUI(wx.Panel):
 
 	def showBitmap(self):
 		return self.__bitmap.Show();
+
+	def isShownBitmap(self):
+		return self.__bitmap.IsShown();

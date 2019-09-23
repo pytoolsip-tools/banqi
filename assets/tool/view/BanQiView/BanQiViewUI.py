@@ -2,14 +2,22 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 00:10:34
+# @Last Modified time: 2019-09-23 22:02:04
 
 import wx;
+import os;
 import copy;
+import math;
 import random;
 
 from _Global import _GG;
 from function.base import *;
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + "/";
+
+ChessConst = require(CURRENT_PATH + "../../config", "chess_config", "ChessConst");
+ChessCountConfig = require(CURRENT_PATH + "../../config", "chess_config", "ChessCountConfig");
+ChessBitmap = require(CURRENT_PATH + "../../ui", "bitmap", "ChessBitmap");
 
 class BanQiViewUI(wx.Panel):
 	"""docstring for BanQiViewUI"""
@@ -24,6 +32,7 @@ class BanQiViewUI(wx.Panel):
 		self.__turn = -1;
 		self.__curItem = None;
 		self.__emptyBitmap = None;
+		self.__tipsInfoMap = {};
 
 	def initParams(self, params):
 		# 初始化参数
@@ -32,9 +41,11 @@ class BanQiViewUI(wx.Panel):
 			"size" : (-1,-1),
 			"style" : wx.BORDER_THEME,
 			"matrix" : (4,8),
-			"bgColour" : wx.Colour(238,168,37),
-			"emptyColour" : wx.Colour(0,0,0),
 			"focusColour" : wx.Colour(200,150,37),
+			"blurColour" : wx.Colour(238,168,37),
+			"emptyColour" : wx.Colour(255,255,255),
+			"emptyFocusColour" : wx.Colour(230,230,230),
+			"tipsColour" : wx.Colour(210,60,60),
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -54,7 +65,8 @@ class BanQiViewUI(wx.Panel):
 		pass;
 		
 	def initViewLayout(self):
-		gridSizer = wx.GridSizer(self.__params["matrix"][0], self.__params["matrix"][1], 0,0);
+		rows, cols = self.getMatrix();
+		gridSizer = wx.GridSizer(rows, cols, 0, 0);
 		for chessView in self.__chessList:
 			gridSizer.Add(chessView);
 		self.SetSizerAndFit(gridSizer);
@@ -64,16 +76,9 @@ class BanQiViewUI(wx.Panel):
 		pass;
 
 	def createEmptyBitmap(self):
-		ChessConst = require(self._curPath + "../../config", "chess_config", "ChessConst");
-		ChessBitmap = require(self._curPath + "../../ui", "bitmap", "ChessBitmap");
-		size = wx.Size(-1, -1);
-		if len(self.__chessList) > 0:
-			size = self.__chessList[0].GetSize();
-		self.__emptyBitmap = ChessBitmap(ChessConst.Empty, size);
+		self.__emptyBitmap = ChessBitmap(ChessConst.Empty);
 
 	def createChessViews(self):
-		ChessCountConfig = require(self._curPath + "../../config", "chess_config", "ChessCountConfig");
-		ChessBitmap = require(self._curPath + "../../ui", "bitmap", "ChessBitmap");
 		for chessKey, count in ChessCountConfig.items():
 			for i in range(count):
 				# 创建位图
@@ -81,7 +86,7 @@ class BanQiViewUI(wx.Panel):
 				self.__bitmapList.append(bitmap);
 				# 创建棋子视图
 				chessCtr = CreateCtr(self._curPath + "../ChessView", self, params = {"bitmap" : bitmap});
-				chessCtr.getUI().SetBackgroundColour(self.__params["bgColour"]);
+				chessCtr.getUI().SetBackgroundColour(self.__params["blurColour"]);
 				self.__chessList.append(chessCtr.getUI());
 				# 绑定点击事件
 				chessCtr.setClickEvent(self.onClickItem);
@@ -92,31 +97,97 @@ class BanQiViewUI(wx.Panel):
 		bitmapList = copy.copy(self.__bitmapList);
 		random.shuffle(bitmapList);
 		for i,chessView in enumerate(self.__chessList):
-			chessView.setBitmap(bitmapList[i]);
+			chessView.setChessBitmap(bitmapList[i]);
 			chessView.hideBitmap();
 
 	def onClickItem(self, item, event):
+		self.resetTipsItems();
+		# 设置点击选中的item
 		if item == self.__curItem:
 			return;
 		if self.__curItem:
-			self.__curItem.SetBackgroundColour(self.__params["bgColour"]);
+			# 更新取消选中Item的颜色
+			color = self.__params["blurColour"];
+			if self.__curItem.getChessBitmap().val() == ChessConst.Empty:
+				color = self.__params["emptyColour"];
+			self.__curItem.SetBackgroundColour(color);
 			self.__curItem.Refresh();
-		item.SetBackgroundColour(self.__params["focusColour"]);
+		# 更新选中Item的颜色
+		color = self.__params["focusColour"];
+		if item.getChessBitmap().val() == ChessConst.Empty:
+			color = self.__params["emptyFocusColour"];
+		item.SetBackgroundColour(color);
 		item.Refresh();
 		self.__curItem = item;
 		pass;
 
 	def onDClickItem(self, item, event):
-		if item != self.__curItem:
-			self.onClickItem(item, event);
+		self.onClickItem(item, event);
 		item.showBitmap();
 		pass;
 
 	def onRClickItem(self, item, event):
-		if item != self.__curItem:
-			self.onClickItem(item, event);
-		item.setBitmap(self.__emptyBitmap);
-		item.hideBitmap();
+		self.onClickItem(item, event);
+		self.checkTipsItems();
+		pass;
+
+	def clearChessBitmap(self, item):
+		item.setChessBitmap(self.__emptyBitmap);
 		item.SetBackgroundColour(self.__params["emptyColour"]);
 		item.Refresh();
-		pass;
+
+	def getMatrix(self):
+		return self.__params["matrix"][0], self.__params["matrix"][1];
+
+	def getItem(self, row, col):
+		rows, cols = self.getMatrix();
+		if row >= rows or col >= cols:
+			return None;
+		index = row*cols + col;
+		if index >= len(self.__chessList):
+			return None;
+		return self.__chessList[index];
+
+	def getItemIdx(self, item):
+		for i, v in enumerate(self.__chessList):
+			if v == item:
+				return i;
+		return -1;
+
+	def getItemMt(self, item):
+		idx = self.getItemIdx(item);
+		if idx >= 0:
+			rows, cols = self.getMatrix();
+			return math.floor(idx/cols), idx%cols;
+		return -1, -1;
+
+	def resetTipsItems(self):
+		for _,info in self.__tipsInfoMap.items():
+			info["item"].SetBackgroundColour(info["color"]);
+		self.__tipsInfoMap = {};
+
+	def checkTipsItems(self):
+		if not self.__curItem:
+			return;
+		if hasattr(self, "getTipsItems"):
+			items = self.getTipsItems(self.__curItem);
+			for item in items:
+				if self.checkItem(item):
+					item.SetBackgroundColour(self.__params["tipsColour"]);
+					self.__tipsInfoMap[item] = {"item" : item, "color" : item.GetBackgroundColour()};
+
+	def checkItem(self, item):
+		if not self.__curItem or not self.__curItem.isShownBitmap():
+			return False;
+		if self.__curItem.getChessBitmap().val() == ChessConst.Empty:
+			return False;
+		if not item.isShownBitmap():
+			return False;
+		if item.getChessBitmap().val() == ChessConst.Empty:
+			return True;
+		if hasattr(self, "onCheckItem"):
+			return self.onCheckItem(self.__curItem, item);
+		return False;
+
+	def getTipsItems(self):
+		return [];

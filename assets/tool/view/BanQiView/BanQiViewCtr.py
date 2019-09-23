@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
-# @Last Modified by:   JimZhang
-# @Last Modified time: 2019-09-21 22:41:03
+# @Last Modified by:   JimDreamHeart
+# @Last Modified time: 2019-09-23 21:47:30
 import os;
 import wx;
 
@@ -83,6 +83,7 @@ class BanQiViewCtr(object):
 			_GG("EventDispatcher").unregister(eventId, self, callbackName);
 
 	def bindBehaviors(self):
+		_GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalRuleBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
 		pass;
 		
 	def unbindBehaviors(self):
