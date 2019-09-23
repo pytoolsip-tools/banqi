@@ -2,13 +2,17 @@
 # @Author: JimZhang
 # @Date:   2018-10-08 21:02:23
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-03-16 13:46:35
+# @Last Modified time: 2019-09-23 23:27:30
 import os;
 import wx;
 
 from _Global import _GG;
 
 from MainViewUI import *;
+
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
+
+require(GetPathByRelativePath("../", CURRENT_PATH), "_load"); # 加载逻辑
 
 def getRegisterEventMap(G_EVENT):
 	return {
