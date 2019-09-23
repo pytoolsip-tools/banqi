@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-23 17:43:12
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 21:44:14
+# @Last Modified time: 2019-09-23 23:10:41
 
 from _Global import _GG;
 from function.base import *;
@@ -38,6 +38,8 @@ class NormalRuleBehavior(_GG("BaseBehavior")):
 	# 	pass;
 
 	def onCheckItem(self, obj, curItem, item, _retTuple = False):
+		if curItem.getChessBitmap().color() == item.getChessBitmap().color():
+			return False;
 		if curItem.getChessBitmap().point() >= item.getChessBitmap().point():
 			return True;
 		return False;

@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 22:02:04
+# @Last Modified time: 2019-09-23 23:10:32
 
 import wx;
 import os;
@@ -141,7 +141,7 @@ class BanQiViewUI(wx.Panel):
 
 	def getItem(self, row, col):
 		rows, cols = self.getMatrix();
-		if row >= rows or col >= cols:
+		if row < 0 or col < 0 or row >= rows or col >= cols:
 			return None;
 		index = row*cols + col;
 		if index >= len(self.__chessList):
@@ -164,6 +164,7 @@ class BanQiViewUI(wx.Panel):
 	def resetTipsItems(self):
 		for _,info in self.__tipsInfoMap.items():
 			info["item"].SetBackgroundColour(info["color"]);
+			info["item"].Refresh();
 		self.__tipsInfoMap = {};
 
 	def checkTipsItems(self):
@@ -173,8 +174,9 @@ class BanQiViewUI(wx.Panel):
 			items = self.getTipsItems(self.__curItem);
 			for item in items:
 				if self.checkItem(item):
-					item.SetBackgroundColour(self.__params["tipsColour"]);
 					self.__tipsInfoMap[item] = {"item" : item, "color" : item.GetBackgroundColour()};
+					item.SetBackgroundColour(self.__params["tipsColour"]);
+					item.Refresh();
 
 	def checkItem(self, item):
 		if not self.__curItem or not self.__curItem.isShownBitmap():

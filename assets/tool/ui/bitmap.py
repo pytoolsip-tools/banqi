@@ -2,7 +2,7 @@
 # @Author: JimDreamHeart
 # @Date:   2019-09-22 13:52:59
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 11:06:06
+# @Last Modified time: 2019-09-23 23:03:55
 
 import wx;
 
@@ -33,4 +33,4 @@ class ChessBitmap(wx.Bitmap):
 		return self.__val.value >> 4;
 
 	def point(self):
-		return self.__val.value & 0x01;
+		return self.__val.value & 0x0f;
