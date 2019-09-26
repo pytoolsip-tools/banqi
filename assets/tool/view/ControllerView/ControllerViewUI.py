@@ -17,6 +17,7 @@ class ControllerViewUI(wx.Panel):
 		self._className_ = ControllerViewUI.__name__;
 		self._curPath = curPath;
 		self.__viewCtr = viewCtr;
+		self.__isPlaying = False;
 
 	def initParams(self, params):
 		# 初始化参数
@@ -26,6 +27,7 @@ class ControllerViewUI(wx.Panel):
 			"style" : wx.BORDER_THEME,
 			"startBtn" : {
 				"label" : "开始游戏",
+				"pauseLabel" : "暂停游戏",
 			},
 			"stopBtn" : {
 				"label" : "停止游戏",
@@ -73,32 +75,33 @@ class ControllerViewUI(wx.Panel):
 		staticText = wx.StaticText(self.__btnPanel, label = "游戏控制器");
 		staticText.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
 		# 开始游戏按钮
-		startGameBtn = wx.Button(self.__btnPanel, label = self.__params["startBtn"]["label"]);
+		self.__startGameBtn = wx.Button(self.__btnPanel, label = self.__params["startBtn"]["label"]);
 		def onStartGame(event):
 			callback = self.__params["startBtn"].get("callback", None);
 			if callable(callback):
-				callback(startGameBtn, event);
-		startGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
+				callback(self.__startGameBtn, event);
+		self.__startGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
 		# 停止游戏按钮
-		stopGameBtn = wx.Button(self.__btnPanel, label = self.__params["stopBtn"]["label"]);
+		self.__stopGameBtn = wx.Button(self.__btnPanel, label = self.__params["stopBtn"]["label"]);
 		def onStartGame(event):
 			callback = self.__params["stopBtn"].get("callback", None);
 			if callable(callback):
-				callback(stopGameBtn, event);
-		stopGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
+				callback(self.__stopGameBtn, event);
+		self.__stopGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
+		self.__stopGameBtn.Enable(enable = False);
 		# 重新开始游戏按钮
-		restartGameBtn = wx.Button(self.__btnPanel, label = self.__params["restartBtn"]["label"]);
+		self.__restartGameBtn = wx.Button(self.__btnPanel, label = self.__params["restartBtn"]["label"]);
 		def onRestartGame(event):
 			callback = self.__params["restartBtn"].get("callback", None);
 			if callable(callback):
-				callback(startGameBtn, restartGameBtn, event);
-		restartGameBtn.Bind(wx.EVT_BUTTON, onRestartGame);
+				callback(self.__restartGameBtn, event);
+		self.__restartGameBtn.Bind(wx.EVT_BUTTON, onRestartGame);
 		# 初始化布局
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(staticText, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
-		box.Add(startGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
-		box.Add(stopGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
-		box.Add(restartGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(self.__startGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(self.__stopGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(self.__restartGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__btnPanel.SetSizer(box);
 
 	def createRuleSelector(self):
@@ -136,5 +139,14 @@ class ControllerViewUI(wx.Panel):
 		self.__ruleSelector.SetSizerAndFit(box);
 		self.__choiceCtrl = choiceCtrl;
 
-	def enableChoiceCtrl(self, enable=True):
-		self.__choiceCtrl.Enable(enable = enable);
+	def isPlaying(self):
+		return self.__isPlaying;
+
+	def play(self, isPlay = True):
+		self.__isPlaying = isPlay;
+		self.__choiceCtrl.Enable(enable = not isPlay);
+		self.__stopGameBtn.Enable(enable = isPlay);
+		self.__startGameBtn.SetLabel(self.__params["startBtn"]["pauseLabel"]);
+
+	def pause(self):
+		self.__startGameBtn.SetLabel(self.__params["startBtn"]["label"]);

@@ -105,6 +105,9 @@ class TimingViewUI(wx.Panel):
 	def createTimingText(self):
 		self.__timingText = wx.StaticText(self, label = "--:--:--");
 
+	def resetTimingText(self):
+		self.__timingText.SetLabel("--:--:--");
+
 	def startTimer(self, isReset = False):
 		if isReset or not self.__startTime:
 			self.restartTime();
@@ -124,3 +127,4 @@ class TimingViewUI(wx.Panel):
 		else:
 			self.__startTime = None;
 			self.__pauseTime = None;
+			self.resetTimingText();

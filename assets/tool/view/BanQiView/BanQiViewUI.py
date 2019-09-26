@@ -92,7 +92,7 @@ class BanQiViewUI(wx.Panel):
 				chessCtr.setDClickEvent(self.onDClickItem);
 				chessCtr.setRClickEvent(self.onRClickItem);
 
-	def randomChess(self):
+	def randomChesses(self):
 		bitmapList = copy.copy(self.__bitmapList);
 		random.shuffle(bitmapList);
 		for i,chessView in enumerate(self.__chessList):
@@ -134,6 +134,11 @@ class BanQiViewUI(wx.Panel):
 		item.setChessBitmap(self.__emptyBitmap);
 		item.SetBackgroundColour(self.__params["emptyColour"]);
 		item.Refresh();
+
+	def resetChesses(self):
+		for i,chessView in enumerate(self.__chessList):
+			chessView.setChessBitmap(self.__bitmapList[i]);
+			chessView.showBitmap();
 
 	def getMatrix(self):
 		return self.__params["matrix"][0], self.__params["matrix"][1];

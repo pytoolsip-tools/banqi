@@ -10,9 +10,16 @@ from _Global import _GG;
 
 from ControllerViewUI import *;
 
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
+
+EVENT_ID = require(GetPathByRelativePath("../../config", CURRENT_PATH), "event_id", "EVENT_ID");
+
 def getRegisterEventMap(G_EVENT):
 	return {
-		# G_EVENT.TO_UPDATE_VIEW : "updateView",
+		EVENT_ID.START_GAME_EVENT : "startGame",
+		EVENT_ID.PAUSE_GAME_EVENT : "pauseGame",
+		EVENT_ID.STOP_GAME_EVENT : "stopGame",
+		EVENT_ID.RESTART_GAME_EVENT : "restartGame",
 	};
 
 class ControllerViewCtr(object):
@@ -90,3 +97,15 @@ class ControllerViewCtr(object):
 			
 	def updateView(self, data):
 		self.__ui.updateView(data);
+
+	def startGame(self, data):
+		self.__ui.play(True);
+
+	def pauseGame(self, data):
+		self.__ui.pause();
+
+	def stopGame(self, data):
+		self.__ui.play(False);
+
+	def restartGame(self, data):
+		self.__ui.play(True);

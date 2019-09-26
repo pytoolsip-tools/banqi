@@ -26,7 +26,6 @@ class MainViewUI(wx.ScrolledWindow):
 		# 初始化滚动条参数
 		self.SetScrollbars(1, 1, *self.__params["size"]);
 		# 私有变量
-		self.__isPlaying = False;
 		self.__rule = None;
 
 	def __del__(self):
@@ -69,6 +68,7 @@ class MainViewUI(wx.ScrolledWindow):
 			"size" : (150, max(600, self.GetSize().y)),
 			"startBtn" : {
 				"label" : "开始游戏",
+				"pauseLabel" : "暂停游戏",
 				"callback" : self.onStartGame,
 			},
 			"stopBtn" : {
@@ -114,29 +114,22 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def onStartGame(self, btn, event):
 		if not self.isPlaying():
-			self.play(True);
-			btn.SetLabel("暂停游戏");
 			_GG("EventDispatcher").dispatch(EVENT_ID.START_GAME_EVENT, {"rule" : self.__rule});
 		else:
-			self.play(False);
-			btn.SetLabel("开始游戏");
 			_GG("EventDispatcher").dispatch(EVENT_ID.PAUSE_GAME_EVENT, {"rule" : self.__rule});
 		pass;
 
 	def onStopGame(self, btn, event):
 		if self.isPlaying():
-			messageDialog = wx.MessageDialog(self, "是否确认停止游戏？", "停止游戏", style = wx.YES_NO|wx.ICON_QUESTION);
+			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认停止游戏？", "停止游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
 				_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
 
-	def onRestartGame(self, startBtn, btn, event):
+	def onRestartGame(self, btn, event):
 		if self.isPlaying():
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认重新开始？", "重新开始游戏", style = wx.YES_NO|wx.ICON_QUESTION);
-			if messageDialog.ShowModal() != wx.ID_YES:
-				return;
-		self.play(True);
-		startBtn.SetLabel("暂停游戏");
-		_GG("EventDispatcher").dispatch(EVENT_ID.RESTART_GAME_EVENT, {"rule" : self.__rule});
+			if messageDialog.ShowModal() == wx.ID_YES:
+				_GG("EventDispatcher").dispatch(EVENT_ID.RESTART_GAME_EVENT, {"rule" : self.__rule});
 		pass;
 
 	def onChangeRule(self, rule):
@@ -144,8 +137,4 @@ class MainViewUI(wx.ScrolledWindow):
 		pass;
 
 	def isPlaying(self):
-		return self.__isPlaying;
-
-	def play(self, isPlay = True):
-		self.__isPlaying = isPlay;
-		self.getCtr().getUIByKey("ControllerView").enableChoiceCtrl(not isPlay);
+		return self.getCtr().getUIByKey("ControllerView").isPlaying();
