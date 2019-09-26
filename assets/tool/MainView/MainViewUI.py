@@ -12,6 +12,7 @@ from function.base import *;
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
 
 EVENT_ID = require(GetPathByRelativePath("../config", CURRENT_PATH), "event_id", "EVENT_ID");
+TurnConst = require(CURRENT_PATH + "../../config", "chess_config", "TurnConst");
 
 class MainViewUI(wx.ScrolledWindow):
 	"""docstring for MainViewUI"""
@@ -88,6 +89,7 @@ class MainViewUI(wx.ScrolledWindow):
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("BanQiView", self._curPath + "../view/BanQiView", params = {
 			"size" : (600, max(600, self.GetSize().y)),
+			"turnCallback" : self.onTurn,
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
 			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
@@ -124,6 +126,7 @@ class MainViewUI(wx.ScrolledWindow):
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认停止游戏？", "停止游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
 				_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
+				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : "", "color" : "black"});
 
 	def onRestartGame(self, btn, event):
 		if self.isPlaying():
@@ -134,6 +137,15 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def onChangeRule(self, rule):
 		self.__rule = rule;
+		pass;
+
+	def onTurn(self, turn):
+		text, color = "", "black";
+		if turn == TurnConst.Black:
+			text, color = "黑方", "black";
+		elif turn == TurnConst.Red:
+			text, color = "红方", "red";
+		_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : text, "color" : color});
 		pass;
 
 	def isPlaying(self):

@@ -24,6 +24,7 @@ class TipsViewUI(wx.Panel):
 			"pos" : (0,0),
 			"size" : (-1,-1),
 			"style" : wx.BORDER_THEME,
+			"turnTitle" : "当前操作方",
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -57,9 +58,9 @@ class TipsViewUI(wx.Panel):
 
 	def createTurnTips(self):
 		self.__turnTips = wx.Panel(self, size = (self.GetSize().x, -1), style = wx.BORDER_THEME);
-		title = wx.StaticText(self.__turnTips, label = "当前操作方");
+		title = wx.StaticText(self.__turnTips, label = self.__params["turnTitle"]);
 		title.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
-		self.__turnObj = wx.StaticText(self.__turnTips, label = "黑方");
+		self.__turnObj = wx.StaticText(self.__turnTips, label = "-  -");
 		self.__turnObj.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD));
 		self.__turnObj.SetForegroundColour("black");
 		# 初始化布局
@@ -73,4 +74,5 @@ class TipsViewUI(wx.Panel):
 		self.__turnObj.SetLabel(f"- {text} -");
 		self.__turnObj.SetForegroundColour(color);
 		self.__turnObj.Refresh();
+		self.GetSizer().Layout();
 		pass;

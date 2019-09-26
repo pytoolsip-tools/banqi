@@ -20,6 +20,7 @@ def getRegisterEventMap(G_EVENT):
 		EVENT_ID.PAUSE_GAME_EVENT : "pauseGame",
 		EVENT_ID.STOP_GAME_EVENT : "stopGame",
 		EVENT_ID.RESTART_GAME_EVENT : "restartGame",
+		EVENT_ID.CHANGE_TURN_EVENT : "changeTurn",
 	};
 
 class TipsViewCtr(object):
@@ -109,3 +110,6 @@ class TipsViewCtr(object):
 
 	def restartGame(self, data):
 		self.getUIByKey("TimingView").startTimer(isReset = True);
+
+	def changeTurn(self, data):
+		self.__ui.changeTurnTips(data["text"], data["color"]);

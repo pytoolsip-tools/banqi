@@ -16,9 +16,9 @@ EVENT_ID = require(GetPathByRelativePath("../../config", CURRENT_PATH), "event_i
 
 def getRegisterEventMap(G_EVENT):
 	return {
-		EVENT_ID.START_GAME_EVENT : "randomChesses",
-		EVENT_ID.RESTART_GAME_EVENT : "randomChesses",
-		EVENT_ID.STOP_GAME_EVENT : "resetChesses",
+		EVENT_ID.START_GAME_EVENT : "startGame",
+		EVENT_ID.RESTART_GAME_EVENT : "startGame",
+		EVENT_ID.STOP_GAME_EVENT : "stopGame",
 	};
 
 class BanQiViewCtr(object):
@@ -98,8 +98,9 @@ class BanQiViewCtr(object):
 	def updateView(self, data):
 		self.__ui.updateView(data);
 
-	def randomChesses(self, data):
+	def startGame(self, data):
 		self.__ui.randomChesses();
+		self.__ui.turn(isRandom = True);
 
-	def resetChesses(self, data):
+	def stopGame(self, data):
 		self.__ui.resetChesses();

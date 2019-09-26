@@ -7,6 +7,11 @@
 from enum import Enum, unique;
 
 @unique
+class TurnConst(Enum):
+	Black	= 0; # 黑方
+	Red		= 1; # 红方
+
+@unique
 class ChessConst(Enum):
 	Empty		= 0x00; # 空
 	# 黑色棋子

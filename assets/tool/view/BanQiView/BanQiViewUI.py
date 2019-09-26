@@ -15,6 +15,7 @@ from function.base import *;
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)).replace("\\", "/") + "/";
 
+TurnConst = require(CURRENT_PATH + "../../config", "chess_config", "TurnConst");
 ChessConst = require(CURRENT_PATH + "../../config", "chess_config", "ChessConst");
 ChessCountConfig = require(CURRENT_PATH + "../../config", "chess_config", "ChessCountConfig");
 ChessBitmap = require(CURRENT_PATH + "../../ui", "bitmap", "ChessBitmap");
@@ -29,7 +30,7 @@ class BanQiViewUI(wx.Panel):
 		self.__viewCtr = viewCtr;
 		self.__chessList = [];
 		self.__bitmapList = [];
-		self.__turn = -1;
+		self.__turn = None;
 		self.__curItem = None;
 		self.__emptyBitmap = None;
 		self.__tipsInfoMap = {};
@@ -46,6 +47,7 @@ class BanQiViewUI(wx.Panel):
 			"emptyColour" : wx.Colour(255,255,255),
 			"emptyFocusColour" : wx.Colour(230,230,230),
 			"tipsColour" : wx.Colour(210,60,60),
+			"turnCallback" : None,
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -197,3 +199,16 @@ class BanQiViewUI(wx.Panel):
 
 	def getTipsItems(self):
 		return [];
+
+	def turn(self, isRandom = False):
+		turnList = [TurnConst.Black, TurnConst.Red];
+		if self.__turn not in turnList or isRandom:
+			self.__turn = random.choice(turnList);
+		else:
+			if self.__turn == TurnConst.Black:
+				self.__turn = TurnConst.Red;
+			else:
+				self.__turn = TurnConst.Black;
+		callback = self.__params["turnCallback"];
+		if callable(callback):
+			callback(self.__turn);

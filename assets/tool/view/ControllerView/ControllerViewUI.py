@@ -146,7 +146,10 @@ class ControllerViewUI(wx.Panel):
 		self.__isPlaying = isPlay;
 		self.__choiceCtrl.Enable(enable = not isPlay);
 		self.__stopGameBtn.Enable(enable = isPlay);
-		self.__startGameBtn.SetLabel(self.__params["startBtn"]["pauseLabel"]);
+		if isPlay:
+			self.__startGameBtn.SetLabel(self.__params["startBtn"]["pauseLabel"]);
+		else:
+			self.pause();
 
 	def pause(self):
 		self.__startGameBtn.SetLabel(self.__params["startBtn"]["label"]);
