@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # @Author: JimZhang
 # @Date:   2019-09-21 22:34:20
-# @Last Modified by:   JimZhang
-# @Last Modified time: 2019-09-21 22:34:20
+# @Last Modified by:   JimDreamHeart
+# @Last Modified time: 2019-09-24 10:53:55
 import os;
 import wx;
 
@@ -10,9 +10,16 @@ from _Global import _GG;
 
 from TipsViewUI import *;
 
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
+
+EVENT_ID = require(GetPathByRelativePath("../../config", CURRENT_PATH), "event_id", "EVENT_ID");
+
 def getRegisterEventMap(G_EVENT):
 	return {
-		# G_EVENT.TO_UPDATE_VIEW : "updateView",
+		EVENT_ID.START_GAME_EVENT : "startGame",
+		EVENT_ID.PAUSE_GAME_EVENT : "pauseGame",
+		EVENT_ID.STOP_GAME_EVENT : "stopGame",
+		EVENT_ID.RESTART_GAME_EVENT : "restartGame",
 	};
 
 class TipsViewCtr(object):
@@ -90,3 +97,15 @@ class TipsViewCtr(object):
 			
 	def updateView(self, data):
 		self.__ui.updateView(data);
+
+	def startGame(self, data):
+		self.getUIByKey("TimingView").startTimer();
+
+	def pauseGame(self, data):
+		self.getUIByKey("TimingView").stopTimer();
+
+	def stopGame(self, data):
+		self.getUIByKey("TimingView").stopTimer(isReset = True);
+
+	def restartGame(self, data):
+		self.getUIByKey("TimingView").startTimer(isReset = True);

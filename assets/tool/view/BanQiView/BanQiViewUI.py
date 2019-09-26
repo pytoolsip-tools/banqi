@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 23:10:32
+# @Last Modified time: 2019-09-24 10:10:45
 
 import wx;
 import os;
@@ -56,7 +56,6 @@ class BanQiViewUI(wx.Panel):
 	def initView(self):
 		self.createControls(); # 创建控件
 		self.initViewLayout(); # 初始化布局
-		self.randomChess();
 
 	def createControls(self):
 		# self.getCtr().createCtrByKey("key", self._curPath + "***View"); # , parent = self, params = {}

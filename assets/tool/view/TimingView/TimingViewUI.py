@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2018-12-22 09:09:43
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 11:20:00
+# @Last Modified time: 2019-09-24 10:53:40
 
 import wx;
 import math;
@@ -105,9 +105,10 @@ class TimingViewUI(wx.Panel):
 	def createTimingText(self):
 		self.__timingText = wx.StaticText(self, label = "--:--:--");
 
-	def startTimer(self, isReset = True):
-		if isReset:
+	def startTimer(self, isReset = False):
+		if isReset or not self.__startTime:
 			self.restartTime();
+			self.__pauseTime = None;
 		else:
 			if self.__pauseTime:
 				self.__startTime += datetime.now() - self.__pauseTime;
@@ -115,7 +116,11 @@ class TimingViewUI(wx.Panel):
 		if self.__timer and not self.__timer.IsRunning():
 			self.__timer.Start(1000);
 
-	def stopTimer(self):
+	def stopTimer(self, isReset = False):
 		if self.__timer and self.__timer.IsRunning():
 			self.__timer.Stop();
-		self.__pauseTime = datetime.now();
+		if not isReset:
+			self.__pauseTime = datetime.now();
+		else:
+			self.__startTime = None;
+			self.__pauseTime = None;

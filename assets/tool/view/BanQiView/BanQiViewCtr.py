@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:41:03
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-23 21:47:30
+# @Last Modified time: 2019-09-24 10:14:10
 import os;
 import wx;
 
@@ -10,9 +10,14 @@ from _Global import _GG;
 
 from BanQiViewUI import *;
 
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
+
+EVENT_ID = require(GetPathByRelativePath("../../config", CURRENT_PATH), "event_id", "EVENT_ID");
+
 def getRegisterEventMap(G_EVENT):
 	return {
-		# G_EVENT.TO_UPDATE_VIEW : "updateView",
+		EVENT_ID.START_GAME_EVENT : "randomChess",
+		EVENT_ID.RESTART_GAME_EVENT : "randomChess",
 	};
 
 class BanQiViewCtr(object):
@@ -91,3 +96,6 @@ class BanQiViewCtr(object):
 			
 	def updateView(self, data):
 		self.__ui.updateView(data);
+
+	def randomChess(self, data):
+		self.__ui.randomChess();

@@ -2,7 +2,7 @@
 # @Author: JimZhang
 # @Date:   2019-09-21 22:30:18
 # @Last Modified by:   JimDreamHeart
-# @Last Modified time: 2019-09-22 23:15:13
+# @Last Modified time: 2019-09-24 11:02:05
 
 import wx;
 
@@ -27,12 +27,17 @@ class ControllerViewUI(wx.Panel):
 			"startBtn" : {
 				"label" : "开始游戏",
 			},
+			"stopBtn" : {
+				"label" : "停止游戏",
+			},
 			"restartBtn" : {
 				"label" : "重新开始",
 			},
-			"rules" : [
-				{"key" : "通用规则", "description" : "通用翻棋规则"},
-			],
+			"rules" : {
+				"list" : [
+					{"key" : "normal", "name" : "通用规则", "description" : "通用翻棋规则"},
+				],
+			},
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -67,22 +72,32 @@ class ControllerViewUI(wx.Panel):
 		self.__btnPanel = wx.Panel(self, size = (self.GetSize().x, -1), style = wx.BORDER_THEME);
 		staticText = wx.StaticText(self.__btnPanel, label = "游戏控制器");
 		staticText.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
+		# 开始游戏按钮
 		startGameBtn = wx.Button(self.__btnPanel, label = self.__params["startBtn"]["label"]);
 		def onStartGame(event):
 			callback = self.__params["startBtn"].get("callback", None);
 			if callable(callback):
 				callback(startGameBtn, event);
 		startGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
+		# 停止游戏按钮
+		stopGameBtn = wx.Button(self.__btnPanel, label = self.__params["stopBtn"]["label"]);
+		def onStartGame(event):
+			callback = self.__params["stopBtn"].get("callback", None);
+			if callable(callback):
+				callback(stopGameBtn, event);
+		stopGameBtn.Bind(wx.EVT_BUTTON, onStartGame);
+		# 重新开始游戏按钮
 		restartGameBtn = wx.Button(self.__btnPanel, label = self.__params["restartBtn"]["label"]);
 		def onRestartGame(event):
 			callback = self.__params["restartBtn"].get("callback", None);
 			if callable(callback):
-				callback(restartGameBtn, event);
+				callback(startGameBtn, restartGameBtn, event);
 		restartGameBtn.Bind(wx.EVT_BUTTON, onRestartGame);
 		# 初始化布局
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(staticText, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
 		box.Add(startGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(stopGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(restartGameBtn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__btnPanel.SetSizer(box);
 
@@ -92,15 +107,20 @@ class ControllerViewUI(wx.Panel):
 		staticText.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
 		textCtrl = wx.TextCtrl(self.__ruleSelector, size = (self.GetSize().x, 300), style = wx.TE_MULTILINE|wx.TE_READONLY);
 		# 创建选择框
+		rulesParams = self.__params["rules"];
 		choices = [];
-		for rule in self.__params["rules"]:
-			choices.append(rule["key"]);
+		for rule in rulesParams["list"]:
+			choices.append(rule["name"]);
 		choiceCtrl = wx.Choice(self.__ruleSelector, choices = choices);
 		def onChoice(ctrl):
 			selectStr = ctrl.GetStringSelection();
-			for rule in self.__params["rules"]:
-				if rule["key"] == selectStr:
+			for rule in rulesParams["list"]:
+				if rule["name"] == selectStr:
 					textCtrl.SetValue(rule["description"]);
+					# 执行回调
+					callback = rulesParams.get("callback", None);
+					if callable(callback):
+						callback(rule);
 		if len(choices) > 0:
 			choiceCtrl.Selection = 0;
 			onChoice(choiceCtrl);
@@ -114,3 +134,7 @@ class ControllerViewUI(wx.Panel):
 		box.Add(choiceCtrl, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(textCtrl, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__ruleSelector.SetSizerAndFit(box);
+		self.__choiceCtrl = choiceCtrl;
+
+	def enableChoiceCtrl(self, enable=True):
+		self.__choiceCtrl.Enable(enable = enable);
