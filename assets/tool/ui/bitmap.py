@@ -20,8 +20,8 @@ class ChessBitmap(wx.Bitmap):
 
 	def initBitmap(self):
 		ChessResConfig = require(self._curPath + "../config", "chess_config", "ChessResConfig");
-		if self.__val in ChessResConfig:
-			self.LoadFile(GetPathByRelativePath("../"+ChessResConfig[self.__val], self._curPath), wx.BITMAP_TYPE_ANY);
+		if self.value() in ChessResConfig:
+			self.LoadFile(GetPathByRelativePath("../"+ChessResConfig[self.value()], self._curPath), wx.BITMAP_TYPE_ANY);
 
 	def val(self):
 		return self.__val;

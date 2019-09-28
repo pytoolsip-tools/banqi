@@ -52,18 +52,18 @@ ChessCountConfig = {
 
 # 棋子资源配置
 ChessResConfig = {
-	ChessConst.B_Soldier	: "res/b_soldier.png", # 卒
-	ChessConst.B_Cannon		: "res/b_cannon.png", # 砲
-	ChessConst.B_Horse		: "res/b_horse.png", # 馬
-	ChessConst.B_Chariot	: "res/b_chariot.png", # 車
-	ChessConst.B_Elephant	: "res/b_elephant.png", # 象
-	ChessConst.B_Advisor 	: "res/b_advisor.png", # 士
-	ChessConst.B_General	: "res/b_general.png", # 將
-	ChessConst.R_Soldier	: "res/r_soldier.png", # 兵
-	ChessConst.R_Cannon		: "res/r_cannon.png", # 炮
-	ChessConst.R_Horse		: "res/r_horse.png", # 傌
-	ChessConst.R_Chariot	: "res/r_chariot.png", # 俥
-	ChessConst.R_Elephant	: "res/r_elephant.png", # 相
-	ChessConst.R_Advisor 	: "res/r_advisor.png", # 仕
-	ChessConst.R_General	: "res/r_general.png", # 帥
+	ChessConst.B_Soldier.value	: "res/b_soldier.png", # 卒
+	ChessConst.B_Cannon.value	: "res/b_cannon.png", # 砲
+	ChessConst.B_Horse.value	: "res/b_horse.png", # 馬
+	ChessConst.B_Chariot.value	: "res/b_chariot.png", # 車
+	ChessConst.B_Elephant.value	: "res/b_elephant.png", # 象
+	ChessConst.B_Advisor.value 	: "res/b_advisor.png", # 士
+	ChessConst.B_General.value	: "res/b_general.png", # 將
+	ChessConst.R_Soldier.value	: "res/r_soldier.png", # 兵
+	ChessConst.R_Cannon.value	: "res/r_cannon.png", # 炮
+	ChessConst.R_Horse.value	: "res/r_horse.png", # 傌
+	ChessConst.R_Chariot.value	: "res/r_chariot.png", # 俥
+	ChessConst.R_Elephant.value	: "res/r_elephant.png", # 相
+	ChessConst.R_Advisor.value 	: "res/r_advisor.png", # 仕
+	ChessConst.R_General.value	: "res/r_general.png", # 帥
 };
