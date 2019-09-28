@@ -47,7 +47,8 @@ class BanQiViewUI(wx.Panel):
 			"emptyColour" : wx.Colour(255,255,255),
 			"emptyFocusColour" : wx.Colour(210,210,210),
 			"tipsColour" : wx.Colour(210,60,60),
-			"turnCallback" : None,
+			"onTurn" : None,
+			"onGameOver" : None,
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -230,9 +231,23 @@ class BanQiViewUI(wx.Panel):
 		return [];
 
 	def checkGameOver(self):
-		pass;
+		# 检测棋盘上是否所有棋子都已显示，且只有一种颜色
+		color = -1;
+		for chessView in self.__chessList:
+			if color == -1:
+				color = chessView.getChessBitmap().color();
+			elif color != chessView.getChessBitmap().color():
+				return False;
+		callback = self.__params["onGameOver"];
+		if callable(callback):
+			callback(self.__turn);
+		return True;
 
 	def turn(self, isRandom = False):
+		# 检测游戏是否结束
+		if self.checkGameOver():
+			return;
+		# 更换操作对象
 		turnList = [TurnConst.Black, TurnConst.Red];
 		if self.__turn not in turnList or isRandom:
 			self.__turn = random.choice(turnList);
@@ -241,7 +256,7 @@ class BanQiViewUI(wx.Panel):
 				self.__turn = TurnConst.Red;
 			else:
 				self.__turn = TurnConst.Black;
-		callback = self.__params["turnCallback"];
+		callback = self.__params["onTurn"];
 		if callable(callback):
 			callback(self.__turn);
 

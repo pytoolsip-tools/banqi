@@ -24,7 +24,10 @@ class TipsViewUI(wx.Panel):
 			"pos" : (0,0),
 			"size" : (-1,-1),
 			"style" : wx.BORDER_THEME,
-			"turnTitle" : "当前操作方",
+			"turn" : {
+				"title" : "当前操作方",
+				"countTitle" : "游戏总步数",
+			},
 			"operate" : {
 				"title" : "",
 				"value" : "",
@@ -63,23 +66,43 @@ class TipsViewUI(wx.Panel):
 		pass;
 
 	def createTurnTips(self):
+		turnParams = self.__params["turn"];
 		self.__turnTips = wx.Panel(self, size = (self.GetSize().x, -1), style = wx.BORDER_THEME);
-		title = wx.StaticText(self.__turnTips, label = self.__params["turnTitle"]);
+		# 操作方
+		title = wx.StaticText(self.__turnTips, label = turnParams["title"]);
 		title.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
 		self.__turnObj = wx.StaticText(self.__turnTips, label = "-  -");
 		self.__turnObj.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD));
 		self.__turnObj.SetForegroundColour("black");
+		# 游戏总步数
+		countTitle = wx.StaticText(self.__turnTips, label = turnParams["countTitle"]);
+		countTitle.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
+		self.__turnCount = wx.StaticText(self.__turnTips, label = "--");
+		self.__turnCount.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD));
+		self.__turnCount.SetForegroundColour("blue");
 		# 初始化布局
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(title, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
 		box.Add(self.__turnObj, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(wx.Panel(self.__turnTips), flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
+		box.Add(countTitle, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(self.__turnCount, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__turnTips.SetSizer(box);
 		pass;
 
 	def changeTurnTips(self, text, color):
+		# 更新操作方
 		self.__turnObj.SetLabel(f"- {text} -");
 		self.__turnObj.SetForegroundColour(color);
 		self.__turnObj.Refresh();
+		# 游戏总步数
+		count = 0;
+		countLabel = self.__turnCount.GetLabel();
+		if countLabel.isdigit():
+			count = int(countLabel);
+		count += 1;
+		self.__turnCount.SetLabel(f"{count}");
+		# 刷新界面布局
 		self.GetSizer().Layout();
 		pass;
 

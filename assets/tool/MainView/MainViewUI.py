@@ -89,7 +89,8 @@ class MainViewUI(wx.ScrolledWindow):
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("BanQiView", self._curPath + "../view/BanQiView", params = {
 			"size" : (600, max(600, self.GetSize().y)),
-			"turnCallback" : self.onTurn,
+			"onTurn" : self.onTurn,
+			"onGameOver" : self.onGameOver,
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
 			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
@@ -150,6 +151,15 @@ class MainViewUI(wx.ScrolledWindow):
 		elif turn == TurnConst.Red:
 			text, color = "红方", "red";
 		_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : text, "color" : color});
+		pass;
+
+	def onGameOver(self, turn):
+		text = "";
+		if turn == TurnConst.Black:
+			text = "黑方";
+		elif turn == TurnConst.Red:
+			text = "红方";
+		wx.MessageDialog(self, f"恭喜{text}获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
 		pass;
 
 	def isPlaying(self):
