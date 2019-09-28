@@ -42,6 +42,8 @@ class NormalRuleBehavior(_GG("BaseBehavior")):
 			return False;
 		if curItem.getChessBitmap().point() >= item.getChessBitmap().point():
 			return True;
+		if curItem.getChessBitmap().point() == 1 and item.getChessBitmap().point() == 7:
+			return True;
 		return False;
 
 	def getTipsItems(self, obj, curItem, _retTuple = False):

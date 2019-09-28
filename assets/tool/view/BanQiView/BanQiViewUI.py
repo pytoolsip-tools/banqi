@@ -45,7 +45,7 @@ class BanQiViewUI(wx.Panel):
 			"focusColour" : wx.Colour(200,150,37),
 			"blurColour" : wx.Colour(238,168,37),
 			"emptyColour" : wx.Colour(255,255,255),
-			"emptyFocusColour" : wx.Colour(230,230,230),
+			"emptyFocusColour" : wx.Colour(210,210,210),
 			"tipsColour" : wx.Colour(210,60,60),
 			"turnCallback" : None,
 		};
@@ -102,6 +102,7 @@ class BanQiViewUI(wx.Panel):
 			chessView.hideBitmap();
 
 	def onClickItem(self, item, event):
+		self.moveItemByTips(item);
 		self.resetTipsItems();
 		# 设置点击选中的item
 		if item == self.__curItem:
@@ -109,13 +110,13 @@ class BanQiViewUI(wx.Panel):
 		if self.__curItem:
 			# 更新取消选中Item的颜色
 			color = self.__params["blurColour"];
-			if self.__curItem.getChessBitmap().val() == ChessConst.Empty:
+			if self.__curItem.getChessBitmap().val() == ChessConst.Empty or self.__curItem.isShownBitmap():
 				color = self.__params["emptyColour"];
 			self.__curItem.SetBackgroundColour(color);
 			self.__curItem.Refresh();
 		# 更新选中Item的颜色
 		color = self.__params["focusColour"];
-		if item.getChessBitmap().val() == ChessConst.Empty:
+		if item.getChessBitmap().val() == ChessConst.Empty or item.isShownBitmap():
 			color = self.__params["emptyFocusColour"];
 		item.SetBackgroundColour(color);
 		item.Refresh();
@@ -125,6 +126,8 @@ class BanQiViewUI(wx.Panel):
 	def onDClickItem(self, item, event):
 		self.onClickItem(item, event);
 		item.showBitmap();
+		item.SetBackgroundColour(self.__params["emptyFocusColour"]);
+		item.Refresh();
 		pass;
 
 	def onRClickItem(self, item, event):
@@ -212,3 +215,13 @@ class BanQiViewUI(wx.Panel):
 		callback = self.__params["turnCallback"];
 		if callable(callback):
 			callback(self.__turn);
+
+	def moveItemByTips(self, item):
+		if item == self.__curItem:
+			return;
+		if self.__curItem in self.__tipsInfoMap:
+			return;
+		if item in self.__tipsInfoMap:
+			bitmap = self.__curItem.getChessBitmap();
+			item.setChessBitmap(bitmap);
+			self.__curItem.setChessBitmap(self.__emptyBitmap);
