@@ -159,7 +159,7 @@ class MainViewUI(wx.ScrolledWindow):
 			text = "黑方";
 		elif turn == TurnConst.Red:
 			text = "红方";
-		wx.MessageDialog(self, f"恭喜{text}获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
+		wx.MessageDialog(self, f"恭喜【{text}】获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
 		pass;
 
 	def isPlaying(self):
