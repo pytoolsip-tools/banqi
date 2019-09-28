@@ -102,7 +102,10 @@ class BanQiViewUI(wx.Panel):
 			chessView.hideBitmap();
 
 	def onClickItem(self, item, event):
-		self.moveItemByTips(item);
+		# 判断移动棋子，移动成功后，转换操作对象
+		if self.moveItemByTips(item):
+			self.turn();
+		# 重置提示
 		self.resetTipsItems();
 		# 设置点击选中的item
 		if item == self.__curItem:
@@ -125,14 +128,19 @@ class BanQiViewUI(wx.Panel):
 
 	def onDClickItem(self, item, event):
 		self.onClickItem(item, event);
-		item.showBitmap();
-		item.SetBackgroundColour(self.__params["emptyFocusColour"]);
-		item.Refresh();
+		# 判断显示棋子，显示后，转换操作对象
+		if not item.isShownBitmap():
+			item.showBitmap();
+			item.SetBackgroundColour(self.__params["emptyFocusColour"]);
+			item.Refresh();
+			self.turn();
 		pass;
 
 	def onRClickItem(self, item, event):
+		self.resetTipsItems();
 		self.onClickItem(item, event);
-		self.checkTipsItems();
+		if self.__curItem and self.__curItem.getChessBitmap().color() == self.__turn.value:
+			self.checkTipsItems();
 		pass;
 
 	def clearChessBitmap(self, item):
@@ -218,10 +226,12 @@ class BanQiViewUI(wx.Panel):
 
 	def moveItemByTips(self, item):
 		if item == self.__curItem:
-			return;
+			return False;
 		if self.__curItem in self.__tipsInfoMap:
-			return;
+			return False;
 		if item in self.__tipsInfoMap:
 			bitmap = self.__curItem.getChessBitmap();
 			item.setChessBitmap(bitmap);
 			self.__curItem.setChessBitmap(self.__emptyBitmap);
+			return True;
+		return False;
