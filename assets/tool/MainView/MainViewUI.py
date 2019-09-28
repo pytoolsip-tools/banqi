@@ -148,18 +148,18 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def onTurn(self, turn):
 		text, color = "", "black";
-		if turn == TurnConst.Black:
+		if turn.value == TurnConst.Black.value:
 			text, color = "黑方", "black";
-		elif turn == TurnConst.Red:
+		elif turn.value == TurnConst.Red.value:
 			text, color = "红方", "red";
 		_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : text, "color" : color});
 		pass;
 
 	def onGameOver(self, turn):
 		text = "";
-		if turn == TurnConst.Black:
+		if turn.value == TurnConst.Black.value:
 			text = "黑方";
-		elif turn == TurnConst.Red:
+		elif turn.value == TurnConst.Red.value:
 			text = "红方";
 		wx.MessageDialog(self, f"恭喜【{text}】获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
 		_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
