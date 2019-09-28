@@ -93,6 +93,10 @@ class MainViewUI(wx.ScrolledWindow):
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
 			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
+			"operate" : {
+				"title" : "游戏操作提示",
+				"value" : "左键单击：选中棋子。\n左键双击：翻开棋子。\n右键单击：显示棋子的可移动（红色）区域。\n其他：单击棋子的可移动（红色）区域后，可移动选中的棋子到指定区域。",
+			},
 		}); # , parent = self, params = {}
 		pass;
 		

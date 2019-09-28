@@ -87,7 +87,7 @@ class BanQiViewUI(wx.Panel):
 				self.__bitmapList.append(bitmap);
 				# 创建棋子视图
 				chessCtr = CreateCtr(self._curPath + "../ChessView", self, params = {"bitmap" : bitmap});
-				chessCtr.getUI().SetBackgroundColour(self.__params["blurColour"]);
+				chessCtr.getUI().SetBackgroundColour(self.__params["emptyColour"]);
 				self.__chessList.append(chessCtr.getUI());
 				# 绑定点击事件
 				chessCtr.setClickEvent(self.onClickItem);
@@ -99,7 +99,7 @@ class BanQiViewUI(wx.Panel):
 		random.shuffle(bitmapList);
 		for i,chessView in enumerate(self.__chessList):
 			chessView.setChessBitmap(bitmapList[i]);
-			chessView.hideBitmap();
+			self.hideItem(chessView);
 
 	def onClickItem(self, item, event):
 		# 判断移动棋子，移动成功后，转换操作对象
@@ -130,9 +130,7 @@ class BanQiViewUI(wx.Panel):
 		self.onClickItem(item, event);
 		# 判断显示棋子，显示后，转换操作对象
 		if not item.isShownBitmap():
-			item.showBitmap();
-			item.SetBackgroundColour(self.__params["emptyFocusColour"]);
-			item.Refresh();
+			self.showItem(item);
 			self.turn();
 		pass;
 
@@ -151,10 +149,30 @@ class BanQiViewUI(wx.Panel):
 	def resetChesses(self):
 		for i,chessView in enumerate(self.__chessList):
 			chessView.setChessBitmap(self.__bitmapList[i]);
-			chessView.showBitmap();
+			self.showItem(chessView);
+
+	def showChesses(self):
+		for chessView in self.__chessList:
+			self.showItem(chessView);
 
 	def getMatrix(self):
 		return self.__params["matrix"][0], self.__params["matrix"][1];
+
+	def showItem(self, item):
+		item.showBitmap();
+		color = self.__params["emptyColour"];
+		if item == self.__curItem:
+			color = self.__params["emptyFocusColour"];
+		item.SetBackgroundColour(color);
+		item.Refresh();
+
+	def hideItem(self, item):
+		item.hideBitmap();
+		color = self.__params["blurColour"];
+		if item == self.__curItem:
+			color = self.__params["focusColour"];
+		item.SetBackgroundColour(color);
+		item.Refresh();
 
 	def getItem(self, row, col):
 		rows, cols = self.getMatrix();
@@ -210,6 +228,9 @@ class BanQiViewUI(wx.Panel):
 
 	def getTipsItems(self):
 		return [];
+
+	def checkGameOver(self):
+		pass;
 
 	def turn(self, isRandom = False):
 		turnList = [TurnConst.Black, TurnConst.Red];

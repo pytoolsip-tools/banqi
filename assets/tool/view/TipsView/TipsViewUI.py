@@ -25,6 +25,10 @@ class TipsViewUI(wx.Panel):
 			"size" : (-1,-1),
 			"style" : wx.BORDER_THEME,
 			"turnTitle" : "当前操作方",
+			"operate" : {
+				"title" : "",
+				"value" : "",
+			},
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -41,14 +45,16 @@ class TipsViewUI(wx.Panel):
 		self.getCtr().createCtrByKey("TimingView", self._curPath + "../TimingView", params = {
 			"size" : (self.GetSize().x, -1),
 		}); # , parent = self, params = {}
+		self.createOperateTips();
 		pass;
 		
 	def initViewLayout(self):
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(self.__turnTips, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
 		box.Add(self.getCtr().getUIByKey("TimingView"), flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
+		box.Add(self.__operateTips, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
 		self.SetSizer(box);
-		totalHeight = self.__turnTips.GetSize().y + self.getCtr().getUIByKey("TimingView").GetSize().y;
+		totalHeight = self.__turnTips.GetSize().y + self.getCtr().getUIByKey("TimingView").GetSize().y + self.__operateTips.GetSize().y;
 		if self.GetSize().y < totalHeight:
 			self.Fit();
 		pass;
@@ -75,4 +81,17 @@ class TipsViewUI(wx.Panel):
 		self.__turnObj.SetForegroundColour(color);
 		self.__turnObj.Refresh();
 		self.GetSizer().Layout();
+		pass;
+
+	def createOperateTips(self):
+		opParams = self.__params["operate"];
+		self.__operateTips = wx.Panel(self, size = (self.GetSize().x, -1), style = wx.BORDER_THEME);
+		title = wx.StaticText(self.__operateTips, label = opParams.get("title", ""));
+		title.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
+		textCtrl = wx.TextCtrl(self.__operateTips, size = (self.GetSize().x, 300), value = opParams.get("value", ""), style = wx.TE_MULTILINE|wx.TE_READONLY);
+		# 初始化布局
+		box = wx.BoxSizer(wx.VERTICAL);
+		box.Add(title, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
+		box.Add(textCtrl, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		self.__operateTips.SetSizer(box);
 		pass;

@@ -103,4 +103,4 @@ class BanQiViewCtr(object):
 		self.__ui.turn(isRandom = True);
 
 	def stopGame(self, data):
-		self.__ui.resetChesses();
+		self.__ui.showChesses();
