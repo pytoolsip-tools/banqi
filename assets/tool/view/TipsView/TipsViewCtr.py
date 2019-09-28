@@ -112,4 +112,7 @@ class TipsViewCtr(object):
 		self.getUIByKey("TimingView").startTimer(isReset = True);
 
 	def changeTurn(self, data):
-		self.__ui.changeTurnTips(data["text"], data["color"]);
+		if data.get("isReset", False):
+			self.__ui.clearTurnTips();
+		elif "text" in data and "color" in data:
+			self.__ui.changeTurnTips(data["text"], data["color"]);

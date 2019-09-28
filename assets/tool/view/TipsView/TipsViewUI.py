@@ -100,8 +100,19 @@ class TipsViewUI(wx.Panel):
 		countLabel = self.__turnCount.GetLabel();
 		if countLabel.isdigit():
 			count = int(countLabel);
-		count += 1;
+			count += 1;
 		self.__turnCount.SetLabel(f"{count}");
+		# 刷新界面布局
+		self.GetSizer().Layout();
+		pass;
+
+	def clearTurnTips(self):
+		# 更新操作方
+		self.__turnObj.SetLabel(f"-  -");
+		self.__turnObj.SetForegroundColour("black");
+		self.__turnObj.Refresh();
+		# 游戏总步数
+		self.__turnCount.SetLabel("--");
 		# 刷新界面布局
 		self.GetSizer().Layout();
 		pass;

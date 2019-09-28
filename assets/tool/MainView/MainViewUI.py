@@ -121,6 +121,7 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def onStartGame(self, btn, event):
 		if not self.isPlaying():
+			_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
 			_GG("EventDispatcher").dispatch(EVENT_ID.START_GAME_EVENT, {"rule" : self.__rule});
 		else:
 			_GG("EventDispatcher").dispatch(EVENT_ID.PAUSE_GAME_EVENT, {"rule" : self.__rule});
@@ -130,13 +131,14 @@ class MainViewUI(wx.ScrolledWindow):
 		if self.isPlaying():
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认停止游戏？", "停止游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
+				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
 				_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
-				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : "", "color" : "black"});
 
 	def onRestartGame(self, btn, event):
 		if self.isPlaying():
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认重新开始？", "重新开始游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
+				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
 				_GG("EventDispatcher").dispatch(EVENT_ID.RESTART_GAME_EVENT, {"rule" : self.__rule});
 		pass;
 
@@ -160,6 +162,7 @@ class MainViewUI(wx.ScrolledWindow):
 		elif turn == TurnConst.Red:
 			text = "红方";
 		wx.MessageDialog(self, f"恭喜【{text}】获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
+		_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
 		pass;
 
 	def isPlaying(self):
