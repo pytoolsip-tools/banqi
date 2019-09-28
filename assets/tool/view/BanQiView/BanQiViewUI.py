@@ -30,7 +30,7 @@ class BanQiViewUI(wx.Panel):
 		self.__viewCtr = viewCtr;
 		self.__chessList = [];
 		self.__bitmapList = [];
-		self.__turn = None;
+		self.__turn = TurnConst.Black;
 		self.__curItem = None;
 		self.__emptyBitmap = None;
 		self.__tipsInfoMap = {};
