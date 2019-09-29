@@ -27,6 +27,7 @@ class TipsViewUI(wx.Panel):
 			"turn" : {
 				"title" : "当前操作方",
 				"countTitle" : "游戏总步数",
+				"yourTitle" : "您的阵营",
 			},
 			"operate" : {
 				"title" : "",
@@ -80,13 +81,21 @@ class TipsViewUI(wx.Panel):
 		self.__turnCount = wx.StaticText(self.__turnTips, label = "--");
 		self.__turnCount.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD));
 		self.__turnCount.SetForegroundColour("blue");
+		# 你的阵营
+		yourTitle = wx.StaticText(self.__turnTips, label = turnParams["yourTitle"]);
+		yourTitle.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
+		self.__yourTurn = wx.StaticText(self.__turnTips, label = "--");
+		self.__yourTurn.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD));
+		self.__yourTurn.SetForegroundColour("green");
 		# 初始化布局
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(title, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
 		box.Add(self.__turnObj, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
-		box.Add(wx.Panel(self.__turnTips), flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
+		box.Add(wx.Panel(self.__turnTips), flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(countTitle, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(self.__turnCount, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(yourTitle, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
+		box.Add(self.__yourTurn, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__turnTips.SetSizer(box);
 		pass;
 
@@ -113,8 +122,18 @@ class TipsViewUI(wx.Panel):
 		self.__turnObj.Refresh();
 		# 游戏总步数
 		self.__turnCount.SetLabel("--");
+		# 更新所属阵营
+		self.__yourTurn.SetLabel("--");
+		self.__yourTurn.SetForegroundColour("green");
+		self.__yourTurn.Refresh();
 		# 刷新界面布局
 		self.GetSizer().Layout();
+		pass;
+
+	def updateYourTurnTips(self, text, color):
+		self.__yourTurn.SetLabel(f"-{text}-");
+		self.__yourTurn.SetForegroundColour(color);
+		self.__yourTurn.Refresh();
 		pass;
 
 	def createOperateTips(self):

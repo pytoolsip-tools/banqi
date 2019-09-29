@@ -100,7 +100,7 @@ class BanQiViewCtr(object):
 
 	def startGame(self, data):
 		self.__ui.randomChesses();
-		self.__ui.turn(isRandom = True);
+		self.__ui.turn(isReset = True);
 
 	def stopGame(self, data):
 		self.__ui.showChesses();

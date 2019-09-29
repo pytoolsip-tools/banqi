@@ -114,5 +114,7 @@ class TipsViewCtr(object):
 	def changeTurn(self, data):
 		if data.get("isReset", False):
 			self.__ui.clearTurnTips();
+		elif data.get("key", "") == "updateYourTurn":
+			self.__ui.updateYourTurnTips(data.get("text", ""), data.get("color", "green"));
 		elif "text" in data and "color" in data:
 			self.__ui.changeTurnTips(data["text"], data["color"]);

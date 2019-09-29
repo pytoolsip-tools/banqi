@@ -30,7 +30,8 @@ class BanQiViewUI(wx.Panel):
 		self.__viewCtr = viewCtr;
 		self.__chessList = [];
 		self.__bitmapList = [];
-		self.__turn = TurnConst.Black;
+		self.__turn = -1;
+		self.__firstTurn = -1;
 		self.__curItem = None;
 		self.__emptyBitmap = None;
 		self.__tipsInfoMap = {};
@@ -49,6 +50,7 @@ class BanQiViewUI(wx.Panel):
 			"tipsColour" : wx.Colour(210,60,60),
 			"onTurn" : None,
 			"onGameOver" : None,
+			"disableTips" : "禁止操作",
 		};
 		for k,v in params.items():
 			self.__params[k] = v;
@@ -103,6 +105,8 @@ class BanQiViewUI(wx.Panel):
 			self.hideItem(chessView);
 
 	def onClickItem(self, item, event):
+		if not self.checkOpRight():
+			return;
 		# 判断移动棋子，移动成功后，转换操作对象
 		if self.moveItemByTips(item):
 			self.turn();
@@ -128,6 +132,8 @@ class BanQiViewUI(wx.Panel):
 		pass;
 
 	def onDClickItem(self, item, event):
+		if not self.checkOpRight():
+			return;
 		self.onClickItem(item, event);
 		# 判断显示棋子，显示后，转换操作对象
 		if not item.isShownBitmap():
@@ -136,9 +142,11 @@ class BanQiViewUI(wx.Panel):
 		pass;
 
 	def onRClickItem(self, item, event):
+		if not self.checkOpRight():
+			return;
 		self.resetTipsItems();
 		self.onClickItem(item, event);
-		if self.__curItem and self.__curItem.getChessBitmap().color() == self.__turn.value:
+		if self.__curItem and self.__turn and self.__curItem.getChessBitmap().color() == self.__turn:
 			self.checkTipsItems();
 		pass;
 
@@ -243,22 +251,32 @@ class BanQiViewUI(wx.Panel):
 			callback(self.__turn);
 		return True;
 
-	def turn(self, isRandom = False):
+	def turn(self, isReset = False):
 		# 检测游戏是否结束
 		if self.checkGameOver():
 			return;
 		# 更换操作对象
-		turnList = [TurnConst.Black, TurnConst.Red];
-		if self.__turn not in turnList or isRandom:
-			self.__turn = random.choice(turnList);
+		firstTurn = -1;
+		if isReset:
+			self.__turn = -1;
+			self.__firstTurn = -1;
+		elif self.__turn == -1 and self.__curItem:
+			firstTurn = self.__curItem.getChessBitmap().color();
+			self.toggleTurn(firstTurn);
+			self.__firstTurn = firstTurn;
 		else:
-			if self.__turn == TurnConst.Black:
-				self.__turn = TurnConst.Red;
-			else:
-				self.__turn = TurnConst.Black;
+			self.toggleTurn();
 		callback = self.__params["onTurn"];
 		if callable(callback):
-			callback(self.__turn);
+			callback(self.__turn, firstTurn);
+
+	def toggleTurn(self, curTurn = -1):
+		if curTurn == -1:
+			curTurn = self.__turn;
+		if curTurn == TurnConst.Black.value:
+			self.__turn = TurnConst.Red.value;
+		else:
+			self.__turn = TurnConst.Black.value;
 
 	def moveItemByTips(self, item):
 		if item == self.__curItem:
@@ -271,3 +289,10 @@ class BanQiViewUI(wx.Panel):
 			self.__curItem.setChessBitmap(self.__emptyBitmap);
 			return True;
 		return False;
+
+	def checkOpRight(self):
+		if self.__turn in [TurnConst.Black.value, TurnConst.Red.value]:
+			if self.__turn != self.__firstTurn:
+				wx.TipWindow(self, self.__params["disableTips"]);
+				return False;
+		return True;

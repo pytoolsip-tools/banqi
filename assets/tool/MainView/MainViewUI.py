@@ -146,20 +146,34 @@ class MainViewUI(wx.ScrolledWindow):
 		self.__rule = rule;
 		pass;
 
-	def onTurn(self, turn):
-		text, color = "", "black";
-		if turn.value == TurnConst.Black.value:
+	def getTextColorByTurn(self, turn):
+		text, color = "", "";
+		if turn == TurnConst.Black.value:
 			text, color = "黑方", "black";
-		elif turn.value == TurnConst.Red.value:
+		elif turn == TurnConst.Red.value:
 			text, color = "红方", "red";
+		return text, color;
+
+	def onTurn(self, turn, firstTurn):
+		# 更新阵营提示
+		if firstTurn in [TurnConst.Black.value, TurnConst.Red.value]:
+			yourText, yourColor = self.getTextColorByTurn(firstTurn);
+			_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"key" : "updateYourTurn", "text" : yourText, "color" : yourColor});
+		# 更新操作方
+		text, color = "You First", "black";
+		if turn != None:
+			if turn == TurnConst.Black.value:
+				text, color = "黑方", "black";
+			elif turn == TurnConst.Red.value:
+				text, color = "红方", "red";
 		_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"text" : text, "color" : color});
 		pass;
 
 	def onGameOver(self, turn):
 		text = "";
-		if turn.value == TurnConst.Black.value:
+		if turn == TurnConst.Black.value:
 			text = "黑方";
-		elif turn.value == TurnConst.Red.value:
+		elif turn == TurnConst.Red.value:
 			text = "红方";
 		wx.MessageDialog(self, f"恭喜【{text}】获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
 		_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
