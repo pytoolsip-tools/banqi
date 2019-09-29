@@ -292,7 +292,10 @@ class BanQiViewUI(wx.Panel):
 
 	def checkOpRight(self):
 		if self.__turn in [TurnConst.Black.value, TurnConst.Red.value]:
-			if self.__turn != self.__firstTurn:
+			if not self.checkFirstTurn():
 				wx.TipWindow(self, self.__params["disableTips"]);
 				return False;
 		return True;
+
+	def checkFirstTurn(self):
+		return self.__turn == self.__firstTurn;

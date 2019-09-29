@@ -91,6 +91,7 @@ class MainViewUI(wx.ScrolledWindow):
 			"size" : (600, max(600, self.GetSize().y)),
 			"onTurn" : self.onTurn,
 			"onGameOver" : self.onGameOver,
+			"disableTips" : "您不是当前操作方，不能进行操作！",
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("TipsView", self._curPath + "../view/TipsView", params = {
 			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
