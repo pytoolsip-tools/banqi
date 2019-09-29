@@ -82,7 +82,13 @@ class MainViewUI(wx.ScrolledWindow):
 			},
 			"rules" : {
 				"list" : [
-					{"key" : "normal", "name" : "通用规则", "description" : "通用翻棋规则"},
+					{"key" : "normal", "name" : "通用规则", "description" : """
+  通用翻棋规则。
+
+  棋子大小排序为【帥 = 將 > 仕 = 士 > 相 = 象 > 俥 = 車 > 傌 = 馬 > 炮 = 砲 > 兵 = 卒】，大棋子可以吃小棋子；特殊的是，【兵】可以吃【將】，【卒】可以吃【帥】。
+
+  玩家每次只能操作一步，如翻开棋子或移动棋子或吃对方的棋子。""",
+					},
 				],
 				"callback" : self.onChangeRule,
 			},
@@ -97,7 +103,14 @@ class MainViewUI(wx.ScrolledWindow):
 			"size" : (max(200, self.GetSize().x - 750), max(600, self.GetSize().y)),
 			"operate" : {
 				"title" : "游戏操作提示",
-				"value" : "左键单击：选中棋子。\n左键双击：翻开棋子。\n右键单击：显示棋子的可移动（红色）区域。\n其他：单击棋子的可移动（红色）区域后，可移动选中的棋子到指定区域。",
+				"value" : """
+  左键单击：选中棋子。
+
+  左键双击：翻开棋子。
+
+  右键单击：显示棋子的可移动（红色）区域。
+  
+  其他：单击棋子的可移动（红色）区域后，可移动选中的棋子到指定区域。""",
 			},
 		}); # , parent = self, params = {}
 		pass;
