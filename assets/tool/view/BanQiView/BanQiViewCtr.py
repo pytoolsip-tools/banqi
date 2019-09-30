@@ -90,7 +90,7 @@ class BanQiViewCtr(object):
 
 	def bindBehaviors(self):
 		_GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalRuleBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
-		_GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalAIBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
+		# _GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalAIBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
 		pass;
 		
 	def unbindBehaviors(self):

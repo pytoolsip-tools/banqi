@@ -13,6 +13,7 @@ CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
 
 EVENT_ID = require(GetPathByRelativePath("../config", CURRENT_PATH), "event_id", "EVENT_ID");
 TurnConst = require(CURRENT_PATH + "../../config", "chess_config", "TurnConst");
+GamePattern = require(CURRENT_PATH + "../../config", "chess_config", "GamePattern");
 
 class MainViewUI(wx.ScrolledWindow):
 	"""docstring for MainViewUI"""
@@ -90,7 +91,12 @@ class MainViewUI(wx.ScrolledWindow):
   玩家每次只能操作一步，如翻开棋子或移动棋子或吃对方的棋子。""",
 					},
 				],
+				"pattern" : [
+					{"key" : "单人模式", "value" : GamePattern.Single.value},
+					{"key" : "多人模式", "value" : GamePattern.Multiple.value},
+				],
 				"callback" : self.onChangeRule,
+				"patternCallback" : self.onChangePattern,
 			},
 		}); # , parent = self, params = {}
 		self.getCtr().createCtrByKey("BanQiView", self._curPath + "../view/BanQiView", params = {
@@ -158,6 +164,10 @@ class MainViewUI(wx.ScrolledWindow):
 
 	def onChangeRule(self, rule):
 		self.__rule = rule;
+		pass;
+
+	def onChangePattern(self, pattern):
+		self.getCtr().getUIByKey("BanQiView").setPattern(pattern["value"]);
 		pass;
 
 	def getTextColorByTurn(self, turn):

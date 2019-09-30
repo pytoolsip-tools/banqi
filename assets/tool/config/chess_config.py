@@ -7,6 +7,11 @@
 from enum import Enum, unique;
 
 @unique
+class GamePattern(Enum):
+	Single		= 0; # 单人模式
+	Multiple	= 1; # 多人模式
+
+@unique
 class TurnConst(Enum):
 	Black	= 0; # 黑方
 	Red		= 1; # 红方

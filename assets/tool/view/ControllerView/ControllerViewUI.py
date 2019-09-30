@@ -39,6 +39,12 @@ class ControllerViewUI(wx.Panel):
 				"list" : [
 					{"key" : "normal", "name" : "通用规则", "description" : "通用翻棋规则"},
 				],
+				"pattern" : [
+					{"key" : "单人模式", "value" : "single"},
+					{"key" : "多人模式", "value" : "multiple"},
+				],
+				"callback" : None,
+				"patternCallback" : None,
 			},
 		};
 		for k,v in params.items():
@@ -105,12 +111,19 @@ class ControllerViewUI(wx.Panel):
 		self.__btnPanel.SetSizer(box);
 
 	def createRuleSelector(self):
+		rulesParams = self.__params["rules"];
 		self.__ruleSelector = wx.Panel(self, size = (self.GetSize().x, -1), style = wx.BORDER_THEME);
 		staticText = wx.StaticText(self.__ruleSelector, label = "游戏规则");
 		staticText.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, underline=True));
-		textCtrl = wx.TextCtrl(self.__ruleSelector, size = (self.GetSize().x, 300), style = wx.TE_MULTILINE|wx.TE_READONLY);
+		# 创建模式选择框
+		choices = [];
+		for p in rulesParams["pattern"]:
+			choices.append(p["key"]);
+		radioBox = wx.RadioBox(self.__ruleSelector, label = "游戏模式", choices = choices);
+		if len(choices) > 0:
+			radioBox.SetSelection(0);
 		# 创建选择框
-		rulesParams = self.__params["rules"];
+		textCtrl = wx.TextCtrl(self.__ruleSelector, size = (self.GetSize().x, 300), style = wx.TE_MULTILINE|wx.TE_READONLY);
 		choices = [];
 		for rule in rulesParams["list"]:
 			choices.append(rule["name"]);
@@ -120,10 +133,6 @@ class ControllerViewUI(wx.Panel):
 			for rule in rulesParams["list"]:
 				if rule["name"] == selectStr:
 					textCtrl.SetValue(rule["description"]);
-					# 执行回调
-					callback = rulesParams.get("callback", None);
-					if callable(callback):
-						callback(rule);
 		if len(choices) > 0:
 			choiceCtrl.Selection = 0;
 			onChoice(choiceCtrl);
@@ -134,9 +143,11 @@ class ControllerViewUI(wx.Panel):
 		# 初始化布局
 		box = wx.BoxSizer(wx.VERTICAL);
 		box.Add(staticText, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 10);
+		box.Add(radioBox, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(choiceCtrl, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		box.Add(textCtrl, flag = wx.ALIGN_CENTER|wx.TOP|wx.BOTTOM, border = 5);
 		self.__ruleSelector.SetSizerAndFit(box);
+		self.__radioBox = radioBox;
 		self.__choiceCtrl = choiceCtrl;
 
 	def isPlaying(self):
@@ -144,12 +155,31 @@ class ControllerViewUI(wx.Panel):
 
 	def play(self, isPlay = True):
 		self.__isPlaying = isPlay;
+		self.__radioBox.Enable(enable = not isPlay);
 		self.__choiceCtrl.Enable(enable = not isPlay);
 		self.__stopGameBtn.Enable(enable = isPlay);
 		if isPlay:
 			self.__startGameBtn.SetLabel(self.__params["startBtn"]["pauseLabel"]);
+			self.onPlay();
 		else:
 			self.pause();
 
 	def pause(self):
 		self.__startGameBtn.SetLabel(self.__params["startBtn"]["label"]);
+
+	def onPlay(self):
+		rulesParams = self.__params["rules"];
+		# 模式回调
+		selectStr = self.__radioBox.GetStringSelection();
+		for p in rulesParams["pattern"]:
+			if p["key"] == selectStr:
+				callback = rulesParams.get("patternCallback", None);
+				if callable(callback):
+					callback(p); # 执行回调
+		# 规则回调
+		selectStr = self.__choiceCtrl.GetStringSelection();
+		for rule in rulesParams["list"]:
+			if rule["name"] == selectStr:
+				callback = rulesParams.get("callback", None);
+				if callable(callback):
+					callback(rule); # 执行回调

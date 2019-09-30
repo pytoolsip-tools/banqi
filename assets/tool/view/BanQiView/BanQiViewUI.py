@@ -19,6 +19,7 @@ TurnConst = require(CURRENT_PATH + "../../config", "chess_config", "TurnConst");
 ChessConst = require(CURRENT_PATH + "../../config", "chess_config", "ChessConst");
 ChessCountConfig = require(CURRENT_PATH + "../../config", "chess_config", "ChessCountConfig");
 ChessBitmap = require(CURRENT_PATH + "../../ui", "bitmap", "ChessBitmap");
+GamePattern = require(CURRENT_PATH + "../../config", "chess_config", "GamePattern");
 
 class BanQiViewUI(wx.Panel):
 	"""docstring for BanQiViewUI"""
@@ -35,6 +36,7 @@ class BanQiViewUI(wx.Panel):
 		self.__curItem = None;
 		self.__emptyBitmap = None;
 		self.__tipsInfoMap = {};
+		self.__pattern = GamePattern.Single.value;
 
 	def initParams(self, params):
 		# 初始化参数
@@ -78,6 +80,9 @@ class BanQiViewUI(wx.Panel):
 
 	def updateView(self, data):
 		pass;
+
+	def setPattern(self, pattern):
+		self.__pattern = pattern;
 
 	def createEmptyBitmap(self):
 		self.__emptyBitmap = ChessBitmap(ChessConst.Empty);
@@ -146,7 +151,7 @@ class BanQiViewUI(wx.Panel):
 			return;
 		self.resetTipsItems();
 		self.onClickItem(item, event);
-		if self.__curItem and self.__turn and self.__curItem.getChessBitmap().color() == self.__turn:
+		if self.__curItem and self.__curItem.getChessBitmap().color() == self.__turn:
 			self.checkTipsItems();
 		pass;
 
@@ -214,13 +219,12 @@ class BanQiViewUI(wx.Panel):
 	def checkTipsItems(self):
 		if not self.__curItem:
 			return;
-		if hasattr(self, "getTipsItems"):
-			items = self.getTipsItems(self.__curItem);
-			for item in items:
-				if self.checkItem(item):
-					self.__tipsInfoMap[item] = {"item" : item, "color" : item.GetBackgroundColour()};
-					item.SetBackgroundColour(self.__params["tipsColour"]);
-					item.Refresh();
+		items = self.getTipsItems(self.__curItem);
+		for item in items:
+			if self.checkItem(item):
+				self.__tipsInfoMap[item] = {"item" : item, "color" : item.GetBackgroundColour()};
+				item.SetBackgroundColour(self.__params["tipsColour"]);
+				item.Refresh();
 
 	def checkItem(self, item):
 		if not self.__curItem or not self.__curItem.isShownBitmap():
@@ -266,8 +270,12 @@ class BanQiViewUI(wx.Panel):
 			self.__firstTurn = firstTurn;
 		else:
 			self.toggleTurn();
-		callback = self.__params["onTurn"];
+		self.onTurn(self.__params["onTurn"], firstTurn);
+
+	def onTurn(self, callback, firstTurn):
 		if callable(callback):
+			if not self.checkSinglePattern():
+				firstTurn = -1;
 			callback(self.__turn, firstTurn);
 
 	def toggleTurn(self, curTurn = -1):
@@ -291,11 +299,15 @@ class BanQiViewUI(wx.Panel):
 		return False;
 
 	def checkOpRight(self):
-		if self.__turn in [TurnConst.Black.value, TurnConst.Red.value]:
-			if not self.checkFirstTurn():
-				wx.TipWindow(self, self.__params["disableTips"]);
-				return False;
+		if self.checkSinglePattern():
+			if self.__turn in [TurnConst.Black.value, TurnConst.Red.value]:
+				if not self.checkFirstTurn():
+					wx.TipWindow(self, self.__params["disableTips"]);
+					return False;
 		return True;
+
+	def checkSinglePattern(self):
+		return self.__pattern == GamePattern.Single.value;
 
 	def checkFirstTurn(self):
 		return self.__turn == self.__firstTurn;
