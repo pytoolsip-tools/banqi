@@ -84,6 +84,9 @@ class BanQiViewUI(wx.Panel):
 	def setPattern(self, pattern):
 		self.__pattern = pattern;
 
+	def getPattern(self):
+		return self.__pattern;
+
 	def createEmptyBitmap(self):
 		self.__emptyBitmap = ChessBitmap(ChessConst.Empty);
 

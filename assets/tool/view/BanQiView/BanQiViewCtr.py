@@ -30,7 +30,7 @@ class BanQiViewCtr(object):
 		self.__CtrMap = {}; # 所创建的控制器
 		self.initUI(parent, params); # 初始化视图UI
 		self.registerEventMap(); # 注册事件
-		self.bindBehaviors(); # 绑定组件
+		self.__behaviors = []; # 所绑定的组件
 
 	def __del__(self):
 		self.__dest__();
@@ -88,12 +88,15 @@ class BanQiViewCtr(object):
 		for eventId, callbackName in eventMap.items():
 			_GG("EventDispatcher").unregister(eventId, self, callbackName);
 
-	def bindBehaviors(self):
-		_GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalRuleBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
-		# _GG("BehaviorManager").bindBehavior(self.getUI(), {"path" : "behavior/NormalAIBehavior", "basePath" : GetPathByRelativePath("../../", self._curPath)});
+	def bindBehaviors(self, bhs = []):
+		for bh in bhs:
+			self.__behaviors.append(_GG("BehaviorManager").bindBehavior(self.getUI(), bh));
 		pass;
 		
 	def unbindBehaviors(self):
+		for bh in self.__behaviors:
+			_GG("BehaviorManager").unbindBehavior(self.getUI(), bh);
+		self.__behaviors.clear();
 		pass;
 			
 	def updateView(self, data):
@@ -105,3 +108,9 @@ class BanQiViewCtr(object):
 
 	def stopGame(self, data):
 		self.__ui.showChesses();
+
+	def setPattern(self, pattern):
+		self.__ui.setPattern(pattern);
+
+	def getPattern(self):
+		return self.__ui.getPattern();

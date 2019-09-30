@@ -14,6 +14,7 @@ CURRENT_PATH = os.path.dirname(os.path.realpath(__file__)); # 当前文件目录
 EVENT_ID = require(GetPathByRelativePath("../config", CURRENT_PATH), "event_id", "EVENT_ID");
 TurnConst = require(CURRENT_PATH + "../../config", "chess_config", "TurnConst");
 GamePattern = require(CURRENT_PATH + "../../config", "chess_config", "GamePattern");
+RuleCost = require(CURRENT_PATH + "../../config", "chess_config", "RuleCost");
 
 class MainViewUI(wx.ScrolledWindow):
 	"""docstring for MainViewUI"""
@@ -27,8 +28,6 @@ class MainViewUI(wx.ScrolledWindow):
 		self.SetBackgroundColour(self.__params["bgColour"]);
 		# 初始化滚动条参数
 		self.SetScrollbars(1, 1, *self.__params["size"]);
-		# 私有变量
-		self.__rule = None;
 
 	def __del__(self):
 		self.__dest__();
@@ -83,7 +82,7 @@ class MainViewUI(wx.ScrolledWindow):
 			},
 			"rules" : {
 				"list" : [
-					{"key" : "normal", "name" : "通用规则", "description" : """
+					{"key" : "通用规则", "value" : RuleCost.Normal.value, "description" : """
   通用翻棋规则。
 
   棋子大小排序为【帥 = 將 > 仕 = 士 > 相 = 象 > 俥 = 車 > 傌 = 馬 > 炮 = 砲 > 兵 = 卒】，大棋子可以吃小棋子；特殊的是，【兵】可以吃【將】，【卒】可以吃【帥】。
@@ -142,9 +141,9 @@ class MainViewUI(wx.ScrolledWindow):
 	def onStartGame(self, btn, event):
 		if not self.isPlaying():
 			_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
-			_GG("EventDispatcher").dispatch(EVENT_ID.START_GAME_EVENT, {"rule" : self.__rule});
+			_GG("EventDispatcher").dispatch(EVENT_ID.START_GAME_EVENT, {});
 		else:
-			_GG("EventDispatcher").dispatch(EVENT_ID.PAUSE_GAME_EVENT, {"rule" : self.__rule});
+			_GG("EventDispatcher").dispatch(EVENT_ID.PAUSE_GAME_EVENT, {});
 		pass;
 
 	def onStopGame(self, btn, event):
@@ -152,22 +151,32 @@ class MainViewUI(wx.ScrolledWindow):
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认停止游戏？", "停止游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
 				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
-				_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
+				_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {});
 
 	def onRestartGame(self, btn, event):
 		if self.isPlaying():
 			messageDialog = wx.MessageDialog(self, "游戏已经开始，是否确认重新开始？", "重新开始游戏", style = wx.YES_NO|wx.ICON_QUESTION);
 			if messageDialog.ShowModal() == wx.ID_YES:
 				_GG("EventDispatcher").dispatch(EVENT_ID.CHANGE_TURN_EVENT, {"isReset" : True});
-				_GG("EventDispatcher").dispatch(EVENT_ID.RESTART_GAME_EVENT, {"rule" : self.__rule});
+				_GG("EventDispatcher").dispatch(EVENT_ID.RESTART_GAME_EVENT, {});
 		pass;
 
 	def onChangeRule(self, rule):
-		self.__rule = rule;
+		banQiViewCtr = self.getCtr().getCtrByKey("BanQiView");
+		banQiViewCtr.unbindBehaviors();
+		if rule["value"] == RuleCost.Normal.value:
+			banQiViewCtr.bindBehaviors([
+				{"path" : "behavior/NormalRuleBehavior", "basePath" : GetPathByRelativePath("../", self._curPath)},
+			]);
+			# 判断是否为单人模式
+			if banQiViewCtr.getPattern() == GamePattern.Single.value:
+				banQiViewCtr.bindBehaviors([
+					{"path" : "behavior/NormalAIBehavior", "basePath" : GetPathByRelativePath("../", self._curPath)},
+				]);
 		pass;
 
 	def onChangePattern(self, pattern):
-		self.getCtr().getUIByKey("BanQiView").setPattern(pattern["value"]);
+		self.getCtr().getCtrByKey("BanQiView").setPattern(pattern["value"]);
 		pass;
 
 	def getTextColorByTurn(self, turn):
@@ -200,7 +209,7 @@ class MainViewUI(wx.ScrolledWindow):
 		elif turn == TurnConst.Red.value:
 			text = "红方";
 		wx.MessageDialog(self, f"恭喜【{text}】获得了胜利！", "游戏结束", style = wx.YES_NO|wx.ICON_INFORMATION).ShowModal();
-		_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {"rule" : self.__rule});
+		_GG("EventDispatcher").dispatch(EVENT_ID.STOP_GAME_EVENT, {});
 		pass;
 
 	def isPlaying(self):

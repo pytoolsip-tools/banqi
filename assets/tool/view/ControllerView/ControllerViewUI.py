@@ -37,7 +37,7 @@ class ControllerViewUI(wx.Panel):
 			},
 			"rules" : {
 				"list" : [
-					{"key" : "normal", "name" : "通用规则", "description" : "通用翻棋规则"},
+					{"key" : "通用规则", "value" : "normal", "description" : "通用翻棋规则"},
 				],
 				"pattern" : [
 					{"key" : "单人模式", "value" : "single"},
@@ -126,12 +126,12 @@ class ControllerViewUI(wx.Panel):
 		textCtrl = wx.TextCtrl(self.__ruleSelector, size = (self.GetSize().x, 300), style = wx.TE_MULTILINE|wx.TE_READONLY);
 		choices = [];
 		for rule in rulesParams["list"]:
-			choices.append(rule["name"]);
+			choices.append(rule["key"]);
 		choiceCtrl = wx.Choice(self.__ruleSelector, choices = choices);
 		def onChoice(ctrl):
 			selectStr = ctrl.GetStringSelection();
 			for rule in rulesParams["list"]:
-				if rule["name"] == selectStr:
+				if rule["key"] == selectStr:
 					textCtrl.SetValue(rule["description"]);
 		if len(choices) > 0:
 			choiceCtrl.Selection = 0;
@@ -179,7 +179,7 @@ class ControllerViewUI(wx.Panel):
 		# 规则回调
 		selectStr = self.__choiceCtrl.GetStringSelection();
 		for rule in rulesParams["list"]:
-			if rule["name"] == selectStr:
+			if rule["key"] == selectStr:
 				callback = rulesParams.get("callback", None);
 				if callable(callback):
 					callback(rule); # 执行回调
