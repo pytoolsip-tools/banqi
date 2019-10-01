@@ -164,12 +164,10 @@ class NormalAIBehavior(_GG("BaseBehavior")):
 		return False;
 
 	def operateItem(self, obj, item, targetItem):
-		_GG("Log").d("AI operateItem:", item.getChessBitmap().val(), targetItem.getChessBitmap().val());
 		obj.onRClickItem(item);
 		obj.onClickItem(targetItem);
 		pass;
 
 	def showItem(self, obj, item):
-		_GG("Log").d("AI showItem:", item.getChessBitmap().val());
 		obj.onDClickItem(item);
 		pass;
