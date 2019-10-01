@@ -112,7 +112,7 @@ class BanQiViewUI(wx.Panel):
 			chessView.setChessBitmap(bitmapList[i]);
 			self.hideItem(chessView);
 
-	def onClickItem(self, item, event):
+	def onClickItem(self, item, event = None):
 		if not self.checkOpRight():
 			return;
 		# 判断移动棋子，移动成功后，转换操作对象
@@ -139,7 +139,7 @@ class BanQiViewUI(wx.Panel):
 		self.__curItem = item;
 		pass;
 
-	def onDClickItem(self, item, event):
+	def onDClickItem(self, item, event = None):
 		if not self.checkOpRight():
 			return;
 		self.onClickItem(item, event);
@@ -149,7 +149,7 @@ class BanQiViewUI(wx.Panel):
 			self.turn();
 		pass;
 
-	def onRClickItem(self, item, event):
+	def onRClickItem(self, item, event = None):
 		if not self.checkOpRight():
 			return;
 		self.resetTipsItems();
@@ -229,17 +229,19 @@ class BanQiViewUI(wx.Panel):
 				item.SetBackgroundColour(self.__params["tipsColour"]);
 				item.Refresh();
 
-	def checkItem(self, item):
-		if not self.__curItem or not self.__curItem.isShownBitmap():
+	def checkItem(self, item, curItem = None):
+		if not curItem:
+			curItem = self.__curItem;
+		if not curItem or not curItem.isShownBitmap():
 			return False;
-		if self.__curItem.getChessBitmap().val() == ChessConst.Empty:
+		if curItem.getChessBitmap().val() == ChessConst.Empty:
 			return False;
 		if not item.isShownBitmap():
 			return False;
 		if item.getChessBitmap().val() == ChessConst.Empty:
 			return True;
 		if hasattr(self, "onCheckItem"):
-			return self.onCheckItem(self.__curItem, item);
+			return self.onCheckItem(curItem, item);
 		return False;
 
 	def getTipsItems(self):
@@ -305,12 +307,21 @@ class BanQiViewUI(wx.Panel):
 		if self.checkSinglePattern():
 			if self.__turn in [TurnConst.Black.value, TurnConst.Red.value]:
 				if not self.checkFirstTurn():
-					wx.TipWindow(self, self.__params["disableTips"]);
+					self.showDisableTipWin(self.__params["disableTips"]);
 					return False;
 		return True;
+
+	def showDisableTipWin(self, tips):
+		wx.TipWindow(self, tips);
 
 	def checkSinglePattern(self):
 		return self.__pattern == GamePattern.Single.value;
 
 	def checkFirstTurn(self):
 		return self.__turn == self.__firstTurn;
+
+	def checkFirstColor(self, color):
+		return self.__firstTurn == color;
+
+	def getChessList(self):
+		return self.__chessList;
