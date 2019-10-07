@@ -248,13 +248,29 @@ class BanQiViewUI(wx.Panel):
 		return [];
 
 	def checkGameOver(self):
-		# 检测棋盘上是否所有棋子都已显示，且只有一种颜色
-		color = -1;
+		# 检测棋盘上是否所有棋子都已显示，且只有一种颜色可移动
+		redCnt, blackCnt = 0, 0;
 		for chessView in self.__chessList:
-			if color == -1:
-				color = chessView.getChessBitmap().color();
-			elif color != chessView.getChessBitmap().color():
+			if not chessView.isShownBitmap():
 				return False;
+			if chessView.getChessBitmap().val() != ChessConst.Empty:
+				# 判断可移动的次数
+				isContinue = False;
+				for item in self.getTipsItems(chessView):
+					if self.checkItem(item, curItem = chessView):
+						isContinue = True;
+						break;
+				if not isContinue:
+					continue;
+				# 获取棋子颜色的数量
+				color = chessView.getChessBitmap().color();
+				if color == TurnConst.Red.value:
+					redCnt += 1;
+				elif color == TurnConst.Black.value:
+					blackCnt += 1;
+		# 判断是否只有一种颜色可移动
+		if redCnt * blackCnt != 0:
+			return False;
 		callback = self.__params["onGameOver"];
 		if callable(callback):
 			callback(self.__turn);

@@ -153,15 +153,36 @@ class NormalAIBehavior(_GG("BaseBehavior")):
 			idx = random.randint(0, len(hideItems)-1);
 			self.showItem(obj, hideItems[idx]);
 			return True;
-		# 移动棋子
+		# 根据最短路径移动棋子
+		minDist, minItem, minTipsItem = -1, None, None;
+		for item in selfItems:
+			if item in tipsItemsMap:
+				for firstItem in firstItems:
+					if obj.checkItem(item, curItem = firstItem):
+						for tipsItem in tipsItemsMap[item]:
+							dist = self.getDistance(obj, tipsItem, firstItem);
+							if dist > minDist:
+								minDist, minItem, minTipsItem = dist, item, tipsItem;
+		# 向最短路径的目标移动棋子
+		if minItem and minTipsItem:
+			self.operateItem(obj, minItem, minTipsItem);
+			return True;
+		# 随机移动棋子
+		idx = random.randint(0, len(selfItems)-1);
 		for i in range(len(selfItems)-1, -1,-1):
-			item = selfItems[i];
+			idx += i;
+			item = selfItems[idx%len(selfItems)];
 			if item in tipsItemsMap:
 				for tipsItem in tipsItemsMap[item]:
 					self.operateItem(obj, item, tipsItem);
 					return True;
 		_GG("Log").e("Failed to click item by normal AI !");
 		return False;
+
+	def getDistance(self, obj, item, firstItem):
+		row, col = obj.getItemMt(item);
+		row1, col1 = obj.getItemMt(firstItem);
+		return (row - row1) ** 2 + (col - col1) ** 2;
 
 	def operateItem(self, obj, item, targetItem):
 		obj.onRClickItem(item);
